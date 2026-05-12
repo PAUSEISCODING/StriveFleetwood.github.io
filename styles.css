@@ -204,11 +204,23 @@ body.light footer {
 }
 
 #modeToggle::after {
-  content: "🌙";
+  content: '';
+  background-image: url(assets/crescent_moon.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
 }
 
 body.light #modeToggle::after {
-  content: "☀️";
+  content: '';
+  background-image: url(assets/sun.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
 }
 
 body.light #modeToggle {
