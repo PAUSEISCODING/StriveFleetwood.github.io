@@ -5,7 +5,7 @@
   font-family: "Roboto", sans-serif;
 }
 
-/* Test Ease Animation Darl/Light Mode */
+/* Test Ease Animation Dark/Light Mode */
 body,
 .navbar,
 .nav-links,
@@ -83,13 +83,15 @@ body {
   align-items: center;
   justify-content: center;
   padding-top: 40px;
+  border-bottom: 3px solid rgb(100, 100, 100);
 }
 
 .hero-content {
   text-align: center;
-  color: #ffffff;
+  color: #cdcdcd;
   max-width: 700px;
   padding: 2rem;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .hero h1 {
@@ -101,6 +103,15 @@ body {
 .hero p {
   font-size: 1.2rem;
   font-weight: 300;
+}
+
+.map{
+  border-top: 3px solid rgb(100, 100, 100);
+  max-width: 800px;
+  margin: 4rem auto;
+  padding: 1.5rem 1.5rem;
+  text-align: center;
+  border-bottom: 3px solid rgb(100, 100, 100);
 }
 
 .intro {
@@ -138,6 +149,7 @@ body {
 .value h3 {
   margin-bottom: 1rem;
   font-weight: 600;
+  border-bottom: 3px solid rgb(137, 137, 137);
 }
 
 .value p {
@@ -145,10 +157,12 @@ body {
 }
 
 .cta {
+  border-top: 3px solid rgb(100, 100, 100);
   background: #2f2f2f;
   color: #ffffff;
   text-align: center;
   padding: 4rem 1.5rem;
+  border-bottom: 3px solid rgb(100, 100, 100);
 }
 
 .cta h2 {
@@ -289,6 +303,8 @@ body.light .value {
 body.light .cta {
   background: #e0e0e0;
   color: #000000;
+  border-top: 3px solid rgb(189, 189, 189);
+  border-bottom: 3px solid rgb(189, 189, 189);
 }
 
 body.light .navbar {
