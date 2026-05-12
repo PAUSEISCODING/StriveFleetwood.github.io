@@ -39,10 +39,10 @@ body {
   justify-content: space-between;
 }
 
-.nav-logo {
-  font-size: 1.4rem;
-  color: #ffffff;
-  letter-spacing: 1px;
+.nav-logo img {
+  height: 60px;
+  width: auto;
+  display: block;
 }
 
 .nav-links {
@@ -64,8 +64,10 @@ body {
 }
 
 .hero {
-  background: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
-              url("assets/StriveFleetwoodLandscapeMed.JPG") center/cover no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
   min-height: 75vh;
   display: flex;
   align-items: center;
