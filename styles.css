@@ -264,6 +264,10 @@ body.light .burger span {
   background: #000000;
 }
 
+.nav-links {
+  background: none;
+}
+
 /* Smaller Screen Stuff */
 
 @media (max-width: 900px) {
@@ -287,18 +291,13 @@ body.light .burger span {
   .nav-links.active {
     display: flex;
   }
-}
 
-@media (max-width: 700px) {
-  .nav-links {
-    gap: 1.2rem;
+  /* light mode FIX */
+  body.light .nav-links {
+    background: rgba(255,255,255,0.95);
   }
 
-  .hero h1 {
-    font-size: 2.3rem;
-  }
-
-  .hero p {
-    font-size: 1rem;
+  body.light .nav-links a {
+    color: #000000;
   }
 }
