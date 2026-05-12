@@ -158,7 +158,15 @@ footer {
   color: #000000;
 }
 
-/* light & dark things */
+body.dark footer {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+body.light footer {
+  background: #ffffff;
+  color: #1a1a1a;
+}
 
 .dark {
   background: #000000;
@@ -292,7 +300,6 @@ body.light .burger span {
     display: flex;
   }
 
-  /* light mode FIX */
   body.light .nav-links {
     background: rgba(255,255,255,0.95);
   }
