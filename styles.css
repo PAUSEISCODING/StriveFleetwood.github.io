@@ -578,7 +578,35 @@ body.light .burger span {
               inset 0px 0 0px 0px rgba(0, 0, 0, 0);
 }
 
+/* NEWS STUFF - no touchy */
 
+.social-feed {
+  max-width: 1000px;
+  margin: 3rem auto;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.social-links {
+  margin-top: 2rem;
+}
+
+.social-links a {
+  display: inline-block;
+  margin: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  background: #6ee7ec;
+  color: #000;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.25s ease;
+}
+
+.social-links a:hover {
+  background: #ffffff;
+  transform: translateY(-2px);
+}
 
 @keyframes fadeUp {
   from {
