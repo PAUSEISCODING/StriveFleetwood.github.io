@@ -484,6 +484,7 @@ body.light .burger span {
   border-radius: 8px;
   box-shadow: inset 0 15px 10px -5px rgba(0, 0, 0, 0.4),
               inset -10px 0 10px -0px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.3s ease-in-out;
 }
 
 .gallery-collection::before {
@@ -512,7 +513,7 @@ body.light .burger span {
   transition: box-shadow 0.3s ease-in-out;
 }
 
-.gallery-item:hover {
+.gallery-item:hover, .gallery-collection:hover {
   box-shadow: inset 0 0px 0px 0px rgba(0, 0, 0, 0),
               inset 0px 0 0px 0px rgba(0, 0, 0, 0);
 }
