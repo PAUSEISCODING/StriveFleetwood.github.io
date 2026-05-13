@@ -552,11 +552,16 @@ body.light .burger span {
   width: 400px;
   height: 300px;
   background-color: #202020;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   margin: 2rem;
   border-radius: 8px;
   box-shadow: inset 0 15px 10px -5px rgba(0, 0, 0, 0.4),
               inset -10px 0 10px -0px rgba(0, 0, 0, 0.4);
   transition: box-shadow 0.3s ease-in-out;
+  overflow: hidden;
+  z-index: 2;
 }
 
 .gallery-collection::before {
@@ -571,6 +576,24 @@ body.light .burger span {
   border-radius: 999px;
   font-size: 0.85rem;
   white-space: nowrap;
+  z-index: 1;
+}
+
+.gallery-collection::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--bg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.7;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 0;
+}
+
+.gallery-collection:hover::after {
+  opacity: 1;
 }
 
 .gallery-item {
@@ -578,16 +601,38 @@ body.light .burger span {
   width: 400px;
   height: 300px;
   background-color: #202020;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   margin: 2rem;
   border-radius: 8px;
   box-shadow: inset 0 15px 10px -5px rgba(0, 0, 0, 0.4),
               inset -10px 0 10px -0px rgba(0, 0, 0, 0.4);
   transition: box-shadow 0.3s ease-in-out;
+  overflow: hidden;
+  z-index: 2;
 }
 
 .gallery-item:hover, .gallery-collection:hover {
   box-shadow: inset 0 0px 0px 0px rgba(0, 0, 0, 0),
               inset 0px 0 0px 0px rgba(0, 0, 0, 0);
+}
+
+.gallery-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--bg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.8;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 1;
+}
+
+.gallery-item:hover::before {
+  opacity: 1;
 }
 
 /* NEWS STUFF - no touchy */
