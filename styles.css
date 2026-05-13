@@ -152,6 +152,11 @@ body {
   animation: fadeUp 0.8s ease forwards;
 }
 
+.intro iframe {
+  margin-top: 1.5rem;
+  border-radius: 8px;
+}
+
 .embed-map-fixed {
   margin: 80px;
 }
@@ -196,6 +201,22 @@ body {
   text-align: left;
   border-left: 3px solid #999;
   transition: 0.2s;
+}
+
+.intro ul li a {
+  font-weight: 600;
+}
+
+
+.intro div[style] {
+  margin-top: 2rem;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+.intro ul li a:hover { /* subtle animation because it looks better and i said so - Callum*/
+  transform: translateX(3px);
 }
 
 .intro ul li:hover {
