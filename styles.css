@@ -402,6 +402,18 @@ body.light #modeToggle {
   color: #000000;
 }
 
+body.light .intro p {
+  color: #333333;
+}
+
+body.light .intro a {
+  color: #0077aa;
+}
+
+body.light .intro a:hover {
+  color: #000000;
+}
+
 /* burger */
 
 .burger {
