@@ -12,6 +12,9 @@ body,
 .value,
 .cta,
 footer,
+.gallery,
+.gallery-collection,
+.gallery-collection::before,
 .nav-links a,
 #modeToggle,
 .burger span {
@@ -343,6 +346,10 @@ body.light .burger span {
   background: none;
 }
 
+.gallery-collection.light {
+  background-color: #cccccc;
+}
+
 /* Smaller Screen Stuff */
 
 @media (max-width: 900px) {
@@ -374,4 +381,43 @@ body.light .burger span {
   body.light .nav-links a {
     color: #000000;
   }
+}
+
+/* Gallery Section */
+
+.gallery {
+  min-height: 75vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  border-bottom: 3px solid rgb(100, 100, 100);
+}
+
+.gallery-collection {
+  position: relative;
+  width: 400px;
+  height: 300px;
+  background-color: #202020;
+  margin: 2rem;
+  border-radius: 8px;
+  box-shadow: inset 0 15px 10px -5px rgba(0, 0, 0, 0.4),
+              inset -10px 0 10px -0px rgba(0, 0, 0, 0.4);
+}
+
+.gallery-collection::before {
+  content: attr(data-label);
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 1);
+  color: #fff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }

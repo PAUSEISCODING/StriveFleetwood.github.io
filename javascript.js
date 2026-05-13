@@ -11,6 +11,10 @@ const btn = document.getElementById("modeToggle")
 btn.addEventListener("click", () => {
   document.body.classList.toggle("light")
   document.body.classList.toggle("dark")
+  document.querySelectorAll(".gallery-collection").forEach(el => {
+    el.classList.toggle("light")
+    el.classList.toggle("dark")
+  })
 })
 
 const burger = document.getElementById("burger")
