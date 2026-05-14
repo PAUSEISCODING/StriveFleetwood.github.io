@@ -59,9 +59,10 @@ body {
 }
 
 .nav-logo img {
-  height: 60px;
+  height: 70px;
   width: auto;
   display: block;
+  border-radius: 100px;
 }
 
 .nav-links {
