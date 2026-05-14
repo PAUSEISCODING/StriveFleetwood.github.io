@@ -7,18 +7,32 @@ window.addEventListener("scroll", () => {
 })
 
 const btn = document.getElementById("modeToggle")
+let isDarkMode = document.body.classList.contains("dark")
 
-btn.addEventListener("click", () => {
-  document.body.classList.toggle("light")
-  document.body.classList.toggle("dark")
+function setColorMode(darkMode) {
+  isDarkMode = darkMode
+  document.body.classList.toggle("dark", darkMode)
+  document.body.classList.toggle("light", !darkMode)
+
   document.querySelectorAll(".gallery-collection").forEach(el => {
-    el.classList.toggle("light")
-    el.classList.toggle("dark")
+    el.classList.toggle("dark", darkMode)
+    el.classList.toggle("light", !darkMode)
   })
   document.querySelectorAll(".gallery-item").forEach(el => {
-    el.classList.toggle("light")
-    el.classList.toggle("dark")
+    el.classList.toggle("dark", darkMode)
+    el.classList.toggle("light", !darkMode)
   })
+
+  localStorage.setItem("colorMode", darkMode ? "dark" : "light")
+}
+
+const savedMode = localStorage.getItem("colorMode")
+if (savedMode === "dark" || savedMode === "light") {
+  setColorMode(savedMode === "dark")
+}
+
+btn.addEventListener("click", () => {
+  setColorMode(!isDarkMode)
 })
 
 const burger = document.getElementById("burger")
