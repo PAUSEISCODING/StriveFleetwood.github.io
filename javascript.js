@@ -28,7 +28,11 @@ function setColorMode(darkMode) {
 
 const savedMode = localStorage.getItem("colorMode")
 if (savedMode === "dark" || savedMode === "light") {
+  document.body.classList.add("no-transition")
   setColorMode(savedMode === "dark")
+  window.requestAnimationFrame(() => {
+    document.body.classList.remove("no-transition")
+  })
 }
 
 btn.addEventListener("click", () => {
