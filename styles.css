@@ -588,6 +588,7 @@ body.light .burger span {
   transition: box-shadow 0.3s ease-in-out;
   overflow: visible;
   z-index: 2;
+  cursor: pointer;
 }
 
 .gallery-collection::before {
