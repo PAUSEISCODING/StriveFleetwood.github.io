@@ -79,6 +79,11 @@ body {
   letter-spacing: 0.5px;
 }
 
+.nav-links a.active,
+.nav-links a.active:hover {
+  color: #2f80ed;
+}
+
 .nav-links a:hover {
   opacity: 0.75;
 }
@@ -375,6 +380,16 @@ body.light footer {
   color: #000000;
 }
 
+.nav-links a.active,
+.nav-links a.active,
+.nav-links a.active:hover {
+  color: #f3b353;
+}
+
+body.light .nav-links a.active {
+  color: #ff5e00;
+}
+
 /* toggle button thing i hate js so much*/
 
 #modeToggle {
@@ -537,6 +552,10 @@ body.light .burger span {
 
   body.light .nav-links a {
     color: #000000;
+  }
+
+  body.light .nav-links a.active {
+    color: #2f80ed;
   }
 }
 
