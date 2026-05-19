@@ -591,19 +591,22 @@ body.light .burger span {
 
 .gallery-collection {
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 400px;
   height: 300px;
   background-color: #202020;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  margin: 2rem;
   border-radius: 8px;
   box-shadow: inset 0 15px 10px -5px rgba(0, 0, 0, 0.4),
-              inset -10px 0 10px -0px rgba(0, 0, 0, 0.4);
+              inset -10px 0 10px -0px rgba(0, 0, 0, 0.4),
+              0 0 0 0 rgba(255,145,0,0);
   transition: box-shadow 0.3s ease-in-out;
   overflow: visible;
-  z-index: 2;
+  z-index: 0;
   cursor: pointer;
 }
 
@@ -618,24 +621,30 @@ body.light .burger span {
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
   font-size: 0.85rem;
+  overflow: visible;
   white-space: nowrap;
-  z-index: 1;
+  z-index: 3;
 }
 
 .gallery-collection::after {
   content: '';
   position: absolute;
   inset: 0;
+  border-radius: 8px;
   background-image: var(--bg);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.7;
-  transition: opacity 0.3s ease-in-out;
-  z-index: 0;
+  opacity: 0.8;
+  overflow: visible;
+  transition: opacity 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  z-index: 1;
 }
 
-.gallery-collection:hover::after {
+.gallery-collection:hover, .gallery-collection:hover::after {
+  box-shadow: inset 0 0px 0px 0px rgba(0,0,0,0),
+              inset 0px 0 0px 0px rgba(0,0,0,0),
+              60px 60px 60px 6px (#ff9100);
   opacity: 1;
 }
 
@@ -647,7 +656,6 @@ body.light .burger span {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  margin: 2rem;
   border-radius: 8px;
   box-shadow: inset 0 15px 10px -5px rgba(0, 0, 0, 0.4),
               inset -10px 0 10px -0px rgba(0, 0, 0, 0.4);
@@ -669,13 +677,42 @@ body.light .burger span {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.8;
+  opacity: 1;
   transition: opacity 0.3s ease-in-out;
   z-index: 1;
 }
 
 .gallery-item:hover::before {
   opacity: 1;
+}
+
+.gallery-item-wrapper {
+  position: relative;
+  width: 400px;
+  height: 300px;
+  margin: 2rem;
+}
+
+.gallery-hover-effect {
+  position: absolute;
+  display: block;
+  width: 400px;
+  height: 300px;
+  inset: 0;
+  background: #ff9100;
+  opacity: 1;
+  visibility: hidden;
+  border-radius: 12px;
+  transform: scale(1);
+  transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  transform-origin: center;
+  z-index: -1;
+}
+
+.gallery-item-wrapper:hover .gallery-hover-effect {
+  transform: scale(1.05);
+  opacity: 1;
+  visibility: visible;
 }
 
 /* NEWS STUFF - no touchy */
