@@ -145,10 +145,17 @@ lightbox.addEventListener('click', (e) => {
   if (e.target === lightbox) closeLightbox();
 });
 
-// Close on Escape key
+// Close on Escape key / Navigate with arrow keys
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'Escape') {
+    closeLightbox();
+  } else if (e.key === 'ArrowRight') {
+    nextImage();
+  } else if (e.key === 'ArrowLeft') {
+    prevImage();
+  }
 });
+
 
 // Lightbox Swipe support
 let startX = 0;
@@ -209,4 +216,17 @@ document.querySelectorAll('[data-type="video"]').forEach(item => {
   });
 });
 
+document.querySelectorAll('[data-type="video"]').forEach(item => {
+  const videoSrc = item.dataset.videoSrc;
+
+  const tempVideo = document.createElement('video');
+  tempVideo.src = videoSrc;
+  tempVideo.addEventListener('loadedmetadata', () => {
+    const duration = tempVideo.duration;
+    const minutes = Math.floor(duration / 60);
+    const seconds = Math.floor(duration % 60).toString().padStart(2, '0');
+
+    item.dataset.duration = `${minutes}:${seconds}`;
+  });
+});
 

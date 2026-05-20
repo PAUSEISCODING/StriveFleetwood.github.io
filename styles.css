@@ -739,6 +739,18 @@ body.light .project-card:hover {
   opacity: 1;
 }
 
+.gallery-bg {
+  position: absolute;
+  inset: 0;
+  background-image: var(--bg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: transform 0.5s ease-in-out;
+  z-index: 1;
+}
+
+
 .gallery-item {
   position: relative;
   width: 400px;
@@ -759,25 +771,6 @@ body.light .project-card:hover {
 .gallery-item:hover, .gallery-collection:hover {
   box-shadow: inset 0 0px 0px 0px rgba(0, 0, 0, 0),
               inset 0px 0 0px 0px rgba(0, 0, 0, 0);
-}
-
-.gallery-item::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: var(--bg);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 1;
-  border-radius: 8px;
-  transition: opacity 0.3s ease-in-out, transform 0.5s ease-in-out;
-  z-index: 1;
-  transform: scale(1);
-}
-
-.gallery-item:hover::before {
-  opacity: 1;
 }
 
 .gallery-item-wrapper {
@@ -804,16 +797,25 @@ body.light .project-card:hover {
 }
 
 .gallery-item-wrapper:hover .gallery-hover-effect {
-  transform: scale(1.075); /* medium */
+  transform: scale(1.05); /* medium */
   opacity: 1;
 }
 
-.gallery-item-wrapper:hover .gallery-item::before {
-  transform: scale(1.10); /* slow */
+.gallery-item-wrapper:hover .gallery-bg {
+  transform: scale(1.10);
 }
 
-.gallery-item-wrapper:hover .gallery-item {
-  transform: scale(1.03); /* tiny */
+.play-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 60px;
+  color: white;
+  opacity: 0.85;
+  pointer-events: none;
+  text-shadow: 0 0 10px rgba(0,0,0,0.6);
+  z-index: 20;
 }
 
 /* Gallery Lightbox */
@@ -896,20 +898,34 @@ body.light .project-card:hover {
 }
 
 .gallery-item[data-type="video"]::after {
-  content: "▶";
-  z-index: 5;
+  content: attr(data-duration);
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 60px;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.65);
   color: white;
-  opacity: 0.85;
+  font-size: 12px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  z-index: 20;
   pointer-events: none;
-  text-shadow: 0 0 10px rgba(0,0,0,0.6);
 }
 
 
+.gallery-item[data-type="video"]::before {
+  content: attr(data-duration);
+  z-index: 10;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.65);
+  color: white;
+  font-size: 12px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  z-index: 6;
+  pointer-events: none;
+}
 
 /* NEWS STUFF - no touchy */
 
