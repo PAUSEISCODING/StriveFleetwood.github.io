@@ -726,6 +726,69 @@ body.light .burger span {
   transform: scale(1.03); /* tiny */
 }
 
+/* Gallery Lightbox */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+}
+
+.lightbox.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lightbox-image {
+  max-width: 90%;
+  max-height: 80%;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 40px;
+  color: white;
+  cursor: pointer;
+}
+
+.lightbox-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 60px;
+  color: white;
+  cursor: pointer;
+  user-select: none;
+}
+
+.lightbox-arrow.left {
+  left: 40px;
+}
+
+.lightbox-arrow.right {
+  right: 40px;
+}
+
+.lightbox-image.swipe-left {
+  transform: translateX(-30px);
+}
+
+.lightbox-image.swipe-right {
+  transform: translateX(30px);
+}
+
+
 /* NEWS STUFF - no touchy */
 
 .social-feed {
