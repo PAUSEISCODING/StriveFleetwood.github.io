@@ -47,6 +47,19 @@ burger.addEventListener("click", () => {
   nav.classList.toggle("active")
 })
 
+const projectFilter = document.getElementById("projectFilter")
+const projectCards = document.querySelectorAll(".project-card")
+
+if (projectFilter && projectCards.length) {
+  projectFilter.addEventListener("change", () => {
+    const filterValue = projectFilter.value
+    projectCards.forEach(card => {
+      const matches = filterValue === "all" || card.dataset.category === filterValue
+      card.style.display = matches ? "block" : "none"
+    })
+  })
+}
+
 /* Lightbox stuffs */
 
 const items = document.querySelectorAll('.gallery-item, .gallery-collection');
