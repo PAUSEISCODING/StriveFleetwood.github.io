@@ -52,19 +52,14 @@ burger.addEventListener("click", () => {
 const items = document.querySelectorAll('.gallery-item, .gallery-collection');
 const lightbox = document.getElementById('lightbox');
 const lightboxImg = document.querySelector('.lightbox-image');
+const lightboxVideo = document.querySelector('.lightbox-video');
 const closeBtn = document.querySelector('.lightbox-close');
 const leftArrow = document.querySelector('.lightbox-arrow.left');
 const rightArrow = document.querySelector('.lightbox-arrow.right');
 
 let currentIndex = 0;
-let images = [];
 
 items.forEach((item, index) => {
-  const bg = item.style.getPropertyValue('--bg')
-    .replace("url('", "")
-    .replace("')", "");
-  images.push(bg);
-
   item.addEventListener('click', () => {
     currentIndex = index;
     openLightbox();
@@ -72,22 +67,60 @@ items.forEach((item, index) => {
 });
 
 function openLightbox() {
-  lightbox.classList.add('active');
-  lightboxImg.src = images[currentIndex];
+  const item = items[currentIndex];
+  const type = item.dataset.type || "image";
+
+  lightbox.classList.add("active");
+
+  if (type === "video") {
+    const src = item.dataset.videoSrc;
+
+    lightboxImg.classList.remove("active");
+    lightboxVideo.classList.add("active");
+
+    lightboxVideo.src = src;
+    lightboxVideo.play();
+  } else {
+    const bg = item.style.getPropertyValue('--bg')
+      .replace("url('", "")
+      .replace("')", "");
+
+    lightboxVideo.pause();
+    lightboxVideo.classList.remove("active");
+
+    lightboxImg.classList.add("active");
+    lightboxImg.src = bg;
+  }
 }
+
+
 
 function closeLightbox() {
   lightbox.classList.remove('active');
+
+  // Stop video if one is playing
+  lightboxVideo.pause();
+  lightboxVideo.currentTime = 0;
+  lightboxVideo.src = "";
 }
 
+
 function nextImage() {
-  currentIndex = (currentIndex + 1) % images.length;
-  lightboxImg.src = images[currentIndex];
+  lightboxImg.classList.add('swipe-left');
+  setTimeout(() => {
+    currentIndex = (currentIndex + 1) % items.length;
+    openLightbox();
+    lightboxImg.classList.remove('swipe-left');
+  }, 150);
 }
 
 function prevImage() {
-  currentIndex = (currentIndex - 1 + images.length) % images.length;
-  lightboxImg.src = images[currentIndex];
+  lightboxImg.classList.add('swipe-right');
+  setTimeout(() => {
+    currentIndex = (currentIndex - 1 + items.length) % items.length;
+    openLightbox();
+    lightboxImg.classList.remove('swipe-right');
+  }, 150);
 }
 
 closeBtn.addEventListener('click', closeLightbox);
@@ -130,21 +163,37 @@ function handleSwipe() {
   }
 }
 
-function nextImage() {
-  lightboxImg.classList.add('swipe-left');
-  setTimeout(() => {
-    currentIndex = (currentIndex + 1) % images.length;
-    lightboxImg.src = images[currentIndex];
-    lightboxImg.classList.remove('swipe-left');
-  }, 150);
+// video thumbnail stuffs
+
+function generateVideoThumbnail(videoSrc, callback) {
+  const video = document.createElement('video');
+  video.src = videoSrc;
+  video.crossOrigin = "anonymous";
+  video.muted = true;
+
+  video.addEventListener('loadeddata', () => {
+    video.currentTime = 2.0; // grab frame at 2.0s
+  });
+
+  video.addEventListener('seeked', () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+
+    const thumbnail = canvas.toDataURL('image/jpeg');
+    callback(thumbnail);
+  });
 }
 
-function prevImage() {
-  lightboxImg.classList.add('swipe-right');
-  setTimeout(() => {
-    currentIndex = (currentIndex - 1 + images.length) % images.length;
-    lightboxImg.src = images[currentIndex];
-    lightboxImg.classList.remove('swipe-right');
-  }, 150);
-}
+document.querySelectorAll('[data-type="video"]').forEach(item => {
+  const videoSrc = item.dataset.videoSrc;
+
+  generateVideoThumbnail(videoSrc, (thumb) => {
+    item.style.setProperty('--bg', `url('${thumb}')`);
+  });
+});
+
 

@@ -788,6 +788,38 @@ body.light .burger span {
   transform: translateX(30px);
 }
 
+.lightbox-image,
+.lightbox-video {
+  max-width: 90%;
+  max-height: 80%;
+  border-radius: 10px;
+  display: none;
+}
+
+.lightbox-image.active,
+.lightbox-video.active {
+  display: block;
+}
+
+.gallery-item[data-type="video"] {
+  position: relative;
+}
+
+.gallery-item[data-type="video"]::after {
+  content: "▶";
+  z-index: 5;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 60px;
+  color: white;
+  opacity: 0.85;
+  pointer-events: none;
+  text-shadow: 0 0 10px rgba(0,0,0,0.6);
+}
+
+
 
 /* NEWS STUFF - no touchy */
 
