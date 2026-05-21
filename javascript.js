@@ -72,14 +72,19 @@ const rightArrow = document.querySelector('.lightbox-arrow.right');
 
 let currentIndex = 0;
 
-items.forEach((item, index) => {
-  item.addEventListener('click', () => {
-    currentIndex = index;
-    openLightbox();
+// Only attach item click listeners if items exist
+if (items.length > 0) {
+  items.forEach((item, index) => {
+    item.addEventListener('click', () => {
+      currentIndex = index;
+      openLightbox();
+    });
   });
-});
+}
 
 function openLightbox() {
+  if (!lightbox) return;
+
   const item = items[currentIndex];
   const type = item.dataset.type || "image";
 
@@ -106,19 +111,19 @@ function openLightbox() {
   }
 }
 
-
-
 function closeLightbox() {
+  if (!lightbox) return;
+
   lightbox.classList.remove('active');
 
-  // Stop video if one is playing
   lightboxVideo.pause();
   lightboxVideo.currentTime = 0;
   lightboxVideo.src = "";
 }
 
-
 function nextImage() {
+  if (!lightboxImg) return;
+
   lightboxImg.classList.add('swipe-left');
   setTimeout(() => {
     currentIndex = (currentIndex + 1) % items.length;
@@ -128,6 +133,8 @@ function nextImage() {
 }
 
 function prevImage() {
+  if (!lightboxImg) return;
+
   lightboxImg.classList.add('swipe-right');
   setTimeout(() => {
     currentIndex = (currentIndex - 1 + items.length) % items.length;
@@ -136,50 +143,48 @@ function prevImage() {
   }, 150);
 }
 
-closeBtn.addEventListener('click', closeLightbox);
-rightArrow.addEventListener('click', nextImage);
-leftArrow.addEventListener('click', prevImage);
+/* ⭐ SAFE EVENT LISTENERS ⭐ */
+if (lightbox) {
+  // Close button
+  if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
 
-// Close on background click
-lightbox.addEventListener('click', (e) => {
-  if (e.target === lightbox) closeLightbox();
-});
+  // Arrows
+  if (rightArrow) rightArrow.addEventListener('click', nextImage);
+  if (leftArrow) leftArrow.addEventListener('click', prevImage);
 
-// Close on Escape key / Navigate with arrow keys
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    closeLightbox();
-  } else if (e.key === 'ArrowRight') {
-    nextImage();
-  } else if (e.key === 'ArrowLeft') {
-    prevImage();
-  }
-});
+  // Background click
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
 
+  // Keyboard controls
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains("active")) return;
 
-// Lightbox Swipe support
-let startX = 0;
-let endX = 0;
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowRight') nextImage();
+    else if (e.key === 'ArrowLeft') prevImage();
+  });
 
-lightbox.addEventListener('touchstart', (e) => {
-  startX = e.touches[0].clientX;
-});
+  // Swipe support
+  let startX = 0;
+  let endX = 0;
 
-lightbox.addEventListener('touchend', (e) => {
-  endX = e.changedTouches[0].clientX;
-  handleSwipe();
-});
+  lightbox.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+  });
 
-function handleSwipe() {
-  const diff = endX - startX;
+  lightbox.addEventListener('touchend', (e) => {
+    endX = e.changedTouches[0].clientX;
+    handleSwipe();
+  });
 
-  // Minimum swipe distance
-  if (Math.abs(diff) < 50) return;
+  function handleSwipe() {
+    const diff = endX - startX;
+    if (Math.abs(diff) < 50) return;
 
-  if (diff > 0) {
-    prevImage();
-  } else {
-    nextImage();
+    if (diff > 0) prevImage();
+    else nextImage();
   }
 }
 
@@ -229,4 +234,92 @@ document.querySelectorAll('[data-type="video"]').forEach(item => {
     item.dataset.duration = `${minutes}:${seconds}`;
   });
 });
+
+// Carousel shenanigans
+
+const carousel = document.querySelector('.carousel');
+if (carousel) {
+  let currentIndexCarousel = 2; 
+  let autoMode = true;
+  let userInteracted = false;
+  let revealTimeout = null;
+  let autoResumeTimeout = null;
+
+  function getFrontCardCarousel() {
+    return document.querySelectorAll('.carousel-card')[currentIndexCarousel];
+  }
+
+  function updateTrackPositionCarousel() {
+    const track = document.querySelector('.carousel-track');
+    const cards = document.querySelectorAll('.carousel-card');
+
+    if (!track || cards.length === 0) return;
+
+    const carouselWidth = carousel.offsetWidth;
+
+    const cardWidth = cards[0].offsetWidth;
+
+    const gap = parseInt(getComputedStyle(track).gap);
+
+    // Distance from start of track to center of target card
+    const targetCenter = currentIndexCarousel * (cardWidth + gap) + cardWidth / 2;
+
+    const visibleCenter = carouselWidth / 2;
+
+    const offset = targetCenter - visibleCenter;
+
+    track.style.transform = `translateX(-${offset}px)`;
+  }
+
+
+  function scrollToNextCardCarousel() {
+    const cards = document.querySelectorAll('.carousel-card');
+    currentIndexCarousel = (currentIndexCarousel + 1) % cards.length;
+    updateTrackPositionCarousel();
+    applyDepthScaling();
+  }
+
+  function applyDepthScaling() {
+    const cards = document.querySelectorAll('.carousel-card');
+    const centerIndex = currentIndexCarousel;
+
+    cards.forEach((card, i) => {
+      const offset = i - centerIndex;
+      const abs = Math.abs(offset);
+
+      let scale = 1;
+      let translate = 0;
+      let opacity = 1;
+
+      if (abs === 0) {
+        scale = 1;
+        translate = 0;
+      } 
+      else if (abs === 1) {
+        scale = 0.8;
+        translate = offset * 60;
+      } 
+      else if (abs === 2) {
+        scale = 0.5;
+        translate = offset * -10;
+      } 
+      else {
+        scale = 0;
+        opacity = 0;
+      }
+
+      card.style.transform = `scale(${scale}) translateX(${translate}px)`;
+      card.style.opacity = opacity;
+    });
+
+    updateTrackPositionCarousel();
+  }
+
+
+
+  updateTrackPositionCarousel();
+  setTimeout(applyDepthScaling, 0);
+}
+
+
 
