@@ -640,7 +640,7 @@ body.light .project-filter-inner select {
   line-height: 1.75;
 }
 
-body.light .project-card {
+body.light .project-card, body.light .project-card p {
   background: #f8f8f8;
   color: #000000;
   border-color: #dcdcdc;
@@ -821,6 +821,7 @@ body.light .project-card:hover {
 /* Gallery Lightbox */
 
 .lightbox {
+  height: 100%;
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.85);
