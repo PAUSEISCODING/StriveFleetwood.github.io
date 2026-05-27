@@ -236,90 +236,157 @@ document.querySelectorAll('[data-type="video"]').forEach(item => {
 });
 
 // Carousel shenanigans
-
 const carousel = document.querySelector('.carousel');
 if (carousel) {
-  let currentIndexCarousel = 2; 
   let autoMode = true;
-  let userInteracted = false;
-  let revealTimeout = null;
   let autoResumeTimeout = null;
 
-  function getFrontCardCarousel() {
-    return document.querySelectorAll('.carousel-card')[currentIndexCarousel];
-  }
+  const cards = document.querySelectorAll('.carousel-card');
 
-  function updateTrackPositionCarousel() {
-    const track = document.querySelector('.carousel-track');
-    const cards = document.querySelectorAll('.carousel-card');
+  // Measure actual rendered card height
+  const cardRect = cards[0].getBoundingClientRect();
+  const cardHeight = cardRect.height;
+  const cardBottomOffset = cardHeight / 2;
 
-    if (!track || cards.length === 0) return;
+  console.log("Card height:", cardHeight);
+  console.log("Card bottom offset:", cardBottomOffset);
 
-    const carouselWidth = carousel.offsetWidth;
-
-    const cardWidth = cards[0].offsetWidth;
-
-    const gap = parseInt(getComputedStyle(track).gap);
-
-    // Distance from start of track to center of target card
-    const targetCenter = currentIndexCarousel * (cardWidth + gap) + cardWidth / 2;
-
-    const visibleCenter = carouselWidth / 2;
-
-    const offset = targetCenter - visibleCenter;
-
-    track.style.transform = `translateX(-${offset}px)`;
-  }
-
-
-  function scrollToNextCardCarousel() {
-    const cards = document.querySelectorAll('.carousel-card');
-    currentIndexCarousel = (currentIndexCarousel + 1) % cards.length;
-    updateTrackPositionCarousel();
-    applyDepthScaling();
-  }
-
-  function applyDepthScaling() {
-    const cards = document.querySelectorAll('.carousel-card');
-    const centerIndex = currentIndexCarousel;
-
+  // 1) Positions: 0–6
+  function assignInitialPositions() {
     cards.forEach((card, i) => {
-      const offset = i - centerIndex;
-      const abs = Math.abs(offset);
+      card.dataset.pos = i;
+    });
+  }
 
-      let scale = 1;
-      let translate = 0;
-      let opacity = 1;
+  // 2) True circular rotation
+  function advancePositions() {
+    const total = cards.length;
 
-      if (abs === 0) {
-        scale = 1;
-        translate = 0;
-      } 
-      else if (abs === 1) {
-        scale = 0.8;
-        translate = offset * 60;
-      } 
-      else if (abs === 2) {
-        scale = 0.5;
-        translate = offset * -10;
-      } 
-      else {
-        scale = 0;
-        opacity = 0;
+    cards.forEach(card => {
+      let pos = parseInt(card.dataset.pos, 10);
+      pos = (pos + 1) % total;
+      card.dataset.pos = pos;
+    });
+  }
+
+  // 3) 3D transform math
+  function get3DTransform(logicalOffset, radius, tiltStrength) {
+    const maxVisibleOffset = 2;
+    const arc = 140;
+    const angle = (logicalOffset / maxVisibleOffset) * (arc / 2);
+    const rad = angle * (Math.PI / 180);
+
+    const x = Math.sin(rad) * radius;
+    const z = Math.cos(rad) * radius;
+
+    const distanceFromFront = Math.abs(logicalOffset) / maxVisibleOffset;
+    const scale = 0.95 - distanceFromFront * 0.3;
+    const tilt = Math.sin(rad) * tiltStrength;
+
+    return { x, z, scale, tilt, angle };
+  }
+
+  // 4) Apply transforms
+  function apply3DWheel(animated = true) {
+    const total = cards.length;
+    const radius = 480;
+    const tiltStrength = 12;
+    const maxVisibleOffset = 2;
+
+    cards.forEach((card, index) => {
+      const pos = parseInt(card.dataset.pos, 10);
+      const logicalOffset = ((pos + 3) % total) - 3;
+
+      // Hide cards outside the visible range
+      if (Math.abs(logicalOffset) > maxVisibleOffset) {
+        card.style.opacity = 0;
+        card.style.pointerEvents = "none";
+        card.style.transform = "translate(-50%, -50%) scale(0.01)";
+        return;
       }
 
-      card.style.transform = `scale(${scale}) translateX(${translate}px)`;
-      card.style.opacity = opacity;
-    });
+      const cfg = get3DTransform(logicalOffset, radius, tiltStrength);
 
-    updateTrackPositionCarousel();
+      // ⭐ SHADOW (now inside the card)
+      const shadow = card.querySelector(".card-shadow");
+
+      if (shadow) {
+        const depthScale = 0.9 + (cfg.z / 480) * 0.4;
+        const opacity = Math.max(0, 1 - Math.abs(logicalOffset) * 0.4);
+
+        shadow.style.transform = `
+          translateX(-50%)
+          scale(${depthScale})
+        `;
+        shadow.style.opacity = opacity;
+      }
+
+      // ⭐ CARD TRANSFORM
+      if (!animated) {
+        card.style.transition = "none";
+      } else {
+        card.style.transition = "transform 0.35s ease, opacity 0.35s ease";
+      }
+
+      card.style.transform = `
+        translate(-50%, -50%)
+        translateX(${cfg.x}px)
+        translateZ(${cfg.z - 150}px)
+        rotateY(${cfg.tilt}deg)
+        scale(${cfg.scale})
+      `;
+
+      card.style.opacity = 1;
+      card.style.zIndex = Math.round(cfg.z);
+    });
   }
 
+  function scrollToNextCardCarousel() {
+    advancePositions();
+    apply3DWheel(true);
+  }
 
+  function startAutoScroll() {
+    autoMode = true;
 
-  updateTrackPositionCarousel();
-  setTimeout(applyDepthScaling, 0);
+    function loop() {
+      if (!autoMode) return;
+      scrollToNextCardCarousel();
+      setTimeout(loop, 3000);
+    }
+
+    loop();
+  }
+
+  carousel.addEventListener('pointerdown', () => {
+    autoMode = false;
+
+    clearTimeout(autoResumeTimeout);
+    autoResumeTimeout = setTimeout(() => {
+      startAutoScroll();
+    }, 8000);
+  });
+
+  assignInitialPositions();
+  apply3DWheel(false);
+  startAutoScroll();
 }
 
+// Ground plane logs
+const ground = document.querySelector(".carousel-ground");
+console.log("Ground plane transform:", getComputedStyle(ground).transform);
 
+const groundMatrix = new DOMMatrixReadOnly(
+  getComputedStyle(ground).transform
+);
+console.log("Ground world Z:", groundMatrix.m43);
+
+// carousel functionality, everything else before this was just the math to get it to scale, spin and have shadows :D
+
+let mode = "idle"; // "idle" | "active"
+let revealedCard = null;
+let idleLoopTimeout = null;
+let revealTimeout = null;
+let activeTimeout = null;
+let isRotating = false;
 
