@@ -307,7 +307,7 @@ if (carousel) {
 
       const cfg = get3DTransform(logicalOffset, radius, tiltStrength);
 
-      // ⭐ SHADOW (now inside the card)
+      // SHADOW
       const shadow = card.querySelector(".card-shadow");
 
       if (shadow) {
@@ -321,7 +321,7 @@ if (carousel) {
         shadow.style.opacity = opacity;
       }
 
-      // ⭐ CARD TRANSFORM
+      // CARD TRANSFORM
       if (!animated) {
         card.style.transition = "none";
       } else {
