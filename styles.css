@@ -939,7 +939,7 @@ body.light .project-card:hover {
   box-sizing: border-box;
   perspective: 1200px;
   transform-style: preserve-3d;
-  transform: translateZ(0); /* forces 3D context */
+  transform: translateZ(0);
   
 }
 
@@ -947,7 +947,7 @@ body.light .project-card:hover {
   position: relative;
   width: 100%;
   height: 540px;
-  transform-style: preserve-3d; /* keeps children in 3D space */
+  transform-style: preserve-3d;
 }
 
 .carousel-card {
@@ -957,11 +957,21 @@ body.light .project-card:hover {
   left: 50%;
   top: 50%;
   transform-origin: center center;
-  transition: transform 0.3s ease, opacity 0.3s ease;
   backface-visibility: hidden;
-  transform-style: preserve-3d
-}
+  transform-style: preserve-3d;
+  pointer-events: auto !important;
+  opacity: 0;
 
+  transition:
+    transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1),
+    opacity 0.35s ease;
+
+  transform:
+    translate(-50%, -50%)
+    var(--wheel-transform)
+    var(--reveal-shift, translateX(0))
+
+}
 
 .card-top {
   position: absolute;
@@ -970,6 +980,13 @@ body.light .project-card:hover {
   border-radius: 12px;
   overflow: hidden;
   z-index: 2;
+
+  transform:
+    translateX(0)
+    var(--topcard-tilt, rotateZ(0deg));
+
+  transition:
+    transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .card-details {
@@ -980,11 +997,24 @@ body.light .project-card:hover {
   padding: 1rem;
   border-radius: 12px;
   z-index: 1;
-  opacity: 1;
+  opacity: 0;
+  transform: translateX(20px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 .carousel-card.revealed .card-top {
-  transform: translateX(-100%);
+  transform:
+    translateX(-95%)
+    translatey(3.5%)
+    var(--topcard-tilt, rotateZ(0deg));
+}
+
+.carousel-card.revealed .card-details {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.1s;
 }
 
 .featured-carousel-wrapper {
@@ -1024,7 +1054,7 @@ body.dark .carousel-ground {
 .card-shadow {
   position: absolute;
   left: 50%;
-  bottom: -60px;
+  bottom: -60px; /* how far down the card shadow is */
   width: 200px;
   height: 40px;
   background: rgba(0,0,0,0.25);

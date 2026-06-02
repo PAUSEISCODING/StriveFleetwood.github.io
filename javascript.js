@@ -72,7 +72,6 @@ const rightArrow = document.querySelector('.lightbox-arrow.right');
 
 let currentIndex = 0;
 
-// Only attach item click listeners if items exist
 if (items.length > 0) {
   items.forEach((item, index) => {
     item.addEventListener('click', () => {
@@ -143,7 +142,6 @@ function prevImage() {
   }, 150);
 }
 
-/* ⭐ SAFE EVENT LISTENERS ⭐ */
 if (lightbox) {
   // Close button
   if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
@@ -236,30 +234,28 @@ document.querySelectorAll('[data-type="video"]').forEach(item => {
 });
 
 // Carousel shenanigans
+
 const carousel = document.querySelector('.carousel');
 if (carousel) {
-  let autoMode = true;
-  let autoResumeTimeout = null;
 
   const cards = document.querySelectorAll('.carousel-card');
 
-  // Measure actual rendered card height
+  // Measure card height (used for shadows)
   const cardRect = cards[0].getBoundingClientRect();
   const cardHeight = cardRect.height;
   const cardBottomOffset = cardHeight / 2;
 
-  console.log("Card height:", cardHeight);
-  console.log("Card bottom offset:", cardBottomOffset);
+  //  Assign initial positions
 
-  // 1) Positions: 0–6
   function assignInitialPositions() {
     cards.forEach((card, i) => {
       card.dataset.pos = i;
     });
   }
 
-  // 2) True circular rotation
-  function advancePositions() {
+  // Move wheel forward
+
+  function scrollToNextCardCarousel() {
     const total = cards.length;
 
     cards.forEach(card => {
@@ -267,9 +263,25 @@ if (carousel) {
       pos = (pos + 1) % total;
       card.dataset.pos = pos;
     });
+
+    apply3DWheel(true);
   }
 
-  // 3) 3D transform math
+
+  // Move wheel backward
+
+  function rotateBackwardOneStep() {
+    const total = cards.length;
+
+    cards.forEach(card => {
+      let pos = parseInt(card.dataset.pos, 10);
+      pos = (pos - 1 + total) % total;
+      card.dataset.pos = pos;
+    });
+
+    apply3DWheel(true);
+  }
+
   function get3DTransform(logicalOffset, radius, tiltStrength) {
     const maxVisibleOffset = 2;
     const arc = 140;
@@ -283,111 +295,248 @@ if (carousel) {
     const scale = 0.95 - distanceFromFront * 0.3;
     const tilt = Math.sin(rad) * tiltStrength;
 
-    return { x, z, scale, tilt, angle };
+    return { x, z, scale, tilt };
   }
 
-  // 4) Apply transforms
+  // Apply transforms to wheel
+
   function apply3DWheel(animated = true) {
     const total = cards.length;
     const radius = 480;
     const tiltStrength = 12;
     const maxVisibleOffset = 2;
 
-    cards.forEach((card, index) => {
+    cards.forEach(card => {
       const pos = parseInt(card.dataset.pos, 10);
       const logicalOffset = ((pos + 3) % total) - 3;
 
-      // Hide cards outside the visible range
+      // Hide cards outside arc
       if (Math.abs(logicalOffset) > maxVisibleOffset) {
         card.style.opacity = 0;
         card.style.pointerEvents = "none";
-        card.style.transform = "translate(-50%, -50%) scale(0.01)";
+        card.style.setProperty("--wheel-transform",
+          "translateX(0) translateZ(-999px) scale(0.01)"
+        );
         return;
       }
 
       const cfg = get3DTransform(logicalOffset, radius, tiltStrength);
 
-      // SHADOW
-      const shadow = card.querySelector(".card-shadow");
-
-      if (shadow) {
-        const depthScale = 0.9 + (cfg.z / 480) * 0.4;
-        const opacity = Math.max(0, 1 - Math.abs(logicalOffset) * 0.4);
-
-        shadow.style.transform = `
-          translateX(-50%)
-          scale(${depthScale})
-        `;
-        shadow.style.opacity = opacity;
-      }
-
-      // CARD TRANSFORM
       if (!animated) {
         card.style.transition = "none";
       } else {
         card.style.transition = "transform 0.35s ease, opacity 0.35s ease";
       }
 
-      card.style.transform = `
-        translate(-50%, -50%)
-        translateX(${cfg.x}px)
-        translateZ(${cfg.z - 150}px)
-        rotateY(${cfg.tilt}deg)
-        scale(${cfg.scale})
-      `;
+      card.style.setProperty(
+        "--wheel-transform",
+        `
+          translateX(${cfg.x}px)
+          translateZ(${cfg.z - 150}px)
+          rotateY(${cfg.tilt}deg)
+          scale(${cfg.scale})
+        `
+      );
 
       card.style.opacity = 1;
       card.style.zIndex = Math.round(cfg.z);
     });
   }
 
-  function scrollToNextCardCarousel() {
-    advancePositions();
-    apply3DWheel(true);
-  }
 
-  function startAutoScroll() {
-    autoMode = true;
+  // Reveal and close
 
-    function loop() {
-      if (!autoMode) return;
-      scrollToNextCardCarousel();
-      setTimeout(loop, 3000);
+  let revealedCard = null;
+
+  function revealCard(card) {
+    if (!card) return;
+
+    if (revealedCard && revealedCard !== card) {
+      closeCard(revealedCard);
     }
 
-    loop();
+    card.classList.add("revealed");
+    revealedCard = card;
+
+    const top = card.querySelector(".card-top");
+    top.style.setProperty("--topcard-tilt", "rotateZ(-5deg)");
+
+    cards.forEach(c => {
+      const pos = parseInt(c.dataset.pos, 10);
+      const logicalOffset = ((pos + 3) % cards.length) - 3;
+
+      if (logicalOffset < 0) {
+        const distance = Math.abs(logicalOffset);
+        const shiftAmount = distance === 1 ? 65 : 15;
+        c.style.setProperty("--reveal-shift", `translateX(-${shiftAmount}px)`);
+      }
+    });
   }
 
-  carousel.addEventListener('pointerdown', () => {
-    autoMode = false;
+  function closeCard(card) {
+    if (!card) return;
 
-    clearTimeout(autoResumeTimeout);
-    autoResumeTimeout = setTimeout(() => {
-      startAutoScroll();
-    }, 8000);
+    card.classList.remove("revealed");
+    cards.forEach(c => c.style.setProperty("--reveal-shift", "translateX(0)"));
+
+    const top = card.querySelector(".card-top");
+    top.style.setProperty("--topcard-tilt", "rotateZ(0deg)");
+
+    if (revealedCard === card) revealedCard = null;
+  }
+
+  // Click to rotate
+
+  cards.forEach(card => {
+    card.addEventListener("click", () => onCardClick(card));
   });
+
+  function onCardClick(card) {
+    enterActiveMode();
+
+    const pos = parseInt(card.dataset.pos, 10);
+
+    if (pos === 0) {
+      if (revealedCard !== card) revealCard(card);
+      return;
+    }
+
+    rotateToCard(card);
+  }
+
+  function rotateToCard(targetCard) {
+    const total = cards.length;
+    const targetPos = parseInt(targetCard.dataset.pos, 10);
+    const logicalOffset = ((targetPos + 3) % total) - 3;
+
+    if (logicalOffset === 0) {
+      revealCard(targetCard);
+      return;
+    }
+
+    const steps = Math.abs(logicalOffset);
+    const forward = logicalOffset < 0;
+
+    cards.forEach(card => {
+      let pos = parseInt(card.dataset.pos, 10);
+      pos = forward
+        ? (pos + steps) % total
+        : (pos - steps + total * steps) % total;
+      card.dataset.pos = pos;
+    });
+
+    apply3DWheel(true);
+
+    setTimeout(() => revealCard(targetCard), 350);
+  }
+
+  // Swipe
+
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  carousel.addEventListener("touchstart", e => {
+    touchStartX = e.changedTouches[0].clientX;
+  });
+
+  carousel.addEventListener("touchend", e => {
+    touchEndX = e.changedTouches[0].clientX;
+    handleSwipe();
+  });
+
+  function handleSwipe() {
+    const dx = touchEndX - touchStartX;
+
+    if (Math.abs(dx) < 40) return;
+
+    enterActiveMode();
+
+    if (dx < 0) rotateBackwardOneStep();
+    else scrollToNextCardCarousel();
+
+    // reveal the front card after the wheel settles
+    setTimeout(() => {
+      const front = getFrontCard();
+      revealCard(front);
+    }, 350);
+  }
+
+  // Idle mode
+  let mode = "idle";
+  let idleLoopTimeout = null;
+  let revealTimeout = null;
+  let activeTimeout = null;
+
+  function getFrontCard() {
+    return [...cards].find(card => card.dataset.pos === "0");
+  }
+
+  function enterIdleMode() {
+    mode = "idle";
+
+    let startDelay = 0;
+    if (revealedCard) {
+      closeCard(revealedCard);
+      startDelay = 600;
+    }
+
+    function idleStep() {
+      if (mode !== "idle") return;
+
+      scrollToNextCardCarousel();
+
+      idleLoopTimeout = setTimeout(() => {
+        if (mode !== "idle") return;
+
+        const frontCard = getFrontCard();
+        revealCard(frontCard);
+
+        revealTimeout = setTimeout(() => {
+          if (mode !== "idle") return;
+
+          closeCard(frontCard);
+
+          setTimeout(() => {
+            if (mode === "idle") idleStep();
+          }, 600);
+
+        }, 6000);
+
+      }, 1200);
+    }
+
+    setTimeout(() => {
+      if (mode === "idle") idleStep();
+    }, startDelay);
+  }
+
+  function enterActiveMode() {
+    if (mode === "active") {
+      resetActiveTimeout();
+      return;
+    }
+
+    mode = "active";
+
+    clearTimeout(idleLoopTimeout);
+    clearTimeout(revealTimeout);
+
+    if (revealedCard) closeCard(revealedCard);
+
+    resetActiveTimeout();
+  }
+
+  function resetActiveTimeout() {
+    clearTimeout(activeTimeout);
+    activeTimeout = setTimeout(() => {
+      mode = "idle";
+      enterIdleMode();
+    }, 20000);
+  }
+
+  // Initialise
 
   assignInitialPositions();
   apply3DWheel(false);
-  startAutoScroll();
+  enterIdleMode();
 }
-
-// Ground plane logs
-const ground = document.querySelector(".carousel-ground");
-console.log("Ground plane transform:", getComputedStyle(ground).transform);
-
-const groundMatrix = new DOMMatrixReadOnly(
-  getComputedStyle(ground).transform
-);
-console.log("Ground world Z:", groundMatrix.m43);
-
-
-// carousel functionality, everything else before this was just the math to get it to scale, spin and have shadows :D
-
-let mode = "idle"; // "idle" | "active"
-let revealedCard = null;
-let idleLoopTimeout = null;
-let revealTimeout = null;
-let activeTimeout = null;
-let isRotating = false;
-
