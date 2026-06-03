@@ -539,7 +539,7 @@ if (carousel) {
 const page = window.location.pathname.split("/").pop();
 const isMenuPage = page === "menus.html";
 
-if (!isMenuPage) {
+if (isMenuPage) {
 
   // Pour sound and tilt controls
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
