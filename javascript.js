@@ -486,35 +486,35 @@ if (carousel) {
     }, 350);
   });
 
-let pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
-pourSound.volume = 0;
-pourSound.pause();
+  let pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
+  pourSound.volume = 0;
+  pourSound.pause();
 
-let isPouring = false;
+  let isPouring = false;
 
-window.addEventListener("devicemotion", (e) => {
-  const tiltX = e.accelerationIncludingGravity.x;
+  window.addEventListener("devicemotion", (e) => {
+    const tiltX = e.accelerationIncludingGravity.x;
 
-  // Convert tilt to a 0–1 intensity
-  let intensity = Math.abs(tiltX) / 8;
-  intensity = Math.min(intensity, 1);
+    // Convert tilt to a 0–1 intensity
+    let intensity = Math.abs(tiltX) / 8;
+    intensity = Math.min(intensity, 1);
 
-  if (intensity > 0.05) {
-    if (!isPouring) {
-      pourSound.currentTime = 0;
-      pourSound.play();
-      isPouring = true;
+    if (intensity > 0.05) {
+      if (!isPouring) {
+        pourSound.currentTime = 0;
+        pourSound.play();
+        isPouring = true;
+      }
+
+      // Smooth fade-in based on tilt
+      pourSound.volume = intensity * 0.6;
+    } else {
+      // Fade out and stop
+      pourSound.volume = 0;
+      pourSound.pause();
+      isPouring = false;
     }
-
-    // Smooth fade-in based on tilt
-    pourSound.volume = intensity * 0.6;
-  } else {
-    // Fade out and stop
-    pourSound.volume = 0;
-    pourSound.pause();
-    isPouring = false;
-  }
-});
+  });
 
   // Idle mode
   let mode = "idle";
