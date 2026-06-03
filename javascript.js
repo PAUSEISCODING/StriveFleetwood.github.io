@@ -486,16 +486,19 @@ if (carousel) {
     }, 350);
   });
 
-  // Pour sound and tilt controls
+  // Only enable pouring on the menu page
+  const isMenuPage = window.location.pathname.includes("menu");
+  if (!isMenuPage) return;
 
+  // Pour sound and tilt controls
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
   const pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
   pourSound.loop = false;
 
   let smoothedTiltX = 0;
-  const smoothingFactor = 0.1; // lower = smoother
+  const smoothingFactor = 0.1;
 
-
+  // Web Audio routing
   const track = audioContext.createMediaElementSource(pourSound);
   const panner = audioContext.createStereoPanner();
   track.connect(panner).connect(audioContext.destination);
@@ -506,15 +509,6 @@ if (carousel) {
   let isPouring = false;
   let audioUnlocked = false;
   let motionAllowed = false;
-
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      // Stop pouring immediately
-      fadeOutAudio(pourSound, 150);
-      isPouring = false;
-    }
-  });
-
 
   // Fade-out helper
   function fadeOutAudio(audio, duration = 200) {
@@ -540,10 +534,8 @@ if (carousel) {
   function unlockAudio() {
     if (!audioUnlocked) {
       audioContext.resume();
-      pourSound.play().then(() => {
-        pourSound.pause();
-        audioUnlocked = true;
-      }).catch(() => {});
+      // DO NOT play the sound here — it causes the burst
+      audioUnlocked = true;
     }
   }
 
@@ -569,20 +561,30 @@ if (carousel) {
     await requestMotionPermission();
   });
 
+  // Stop pouring when screen is off or tab hidden
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      fadeOutAudio(pourSound, 150);
+      isPouring = false;
+    }
+  });
+
   // MAIN TILT HANDLER
   window.addEventListener("devicemotion", (e) => {
     if (!motionAllowed || !audioUnlocked) return;
+    if (document.hidden) return; // extra safety
 
     const rawTiltX = e.accelerationIncludingGravity.x;
+
+    // Smooth tilt
     smoothedTiltX = smoothedTiltX + (rawTiltX - smoothedTiltX) * smoothingFactor;
 
-
     // Convert tilt to a 0–1 intensity
-    let intensity = Math.abs(tiltX) / 8;
+    let intensity = Math.abs(smoothedTiltX) / 8;
     intensity = Math.min(intensity, 1);
 
-    // Map tilt to stereo pan (-1 to +1)
-    let panValue = Math.max(-1, Math.min(tiltX / 8, 1));
+    // Stereo pan
+    let panValue = Math.max(-1, Math.min(smoothedTiltX / 8, 1));
     panner.pan.value = panValue;
 
     // Require a stronger tilt to start pouring
@@ -593,7 +595,6 @@ if (carousel) {
         isPouring = true;
       }
 
-      // Smooth fade-in based on tilt
       pourSound.volume = intensity * 0.6;
 
     } else {
