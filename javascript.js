@@ -554,17 +554,6 @@ if (isMenuPage) {
     console.log("Sound loaded!");
   });
 
-  // Only allow pouring when phone is upright
-  const upright = Math.abs(e.accelerationIncludingGravity.z) > 7;
-  if (!upright) {
-    // Stop pouring if phone is not upright
-    if (isPouring) {
-      fadeOutAudio(pourSound, 200);
-      isPouring = false;
-    }
-    return;
-  }
-
   // Web Audio routing
   const track = audioContext.createMediaElementSource(pourSound);
   const panner = audioContext.createStereoPanner();
@@ -642,12 +631,28 @@ if (isMenuPage) {
     console.log("Tilt detected:", e.accelerationIncludingGravity.x);
   });
 
-  // MAIN TILT HANDLER
+  // main tilt handler
+
   window.addEventListener("devicemotion", (e) => {
     if (!motionAllowed || !audioUnlocked) return;
-    if (document.hidden) return; // extra safety
+    if (document.hidden) return;
 
-    const rawTiltX = e.accelerationIncludingGravity.x;
+    const g = e.accelerationIncludingGravity;
+
+    // Only allow pouring when phone is upright
+    const upright =
+      Math.abs(g.z) > Math.abs(g.x) &&
+      Math.abs(g.z) > Math.abs(g.y);
+
+    if (!upright) {
+      if (isPouring) {
+        fadeOutAudio(pourSound, 200);
+        isPouring = false;
+      }
+      return;
+    }
+
+    const rawTiltX = g.x;
 
     // Smooth tilt
     smoothedTiltX = smoothedTiltX + (rawTiltX - smoothedTiltX) * smoothingFactor;
@@ -678,5 +683,6 @@ if (isMenuPage) {
       }
     }
   });
+
 }
 
