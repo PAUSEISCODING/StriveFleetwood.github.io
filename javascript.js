@@ -492,6 +492,10 @@ if (carousel) {
   const pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
   pourSound.loop = false;
 
+  let smoothedTiltX = 0;
+  const smoothingFactor = 0.1; // lower = smoother
+
+
   const track = audioContext.createMediaElementSource(pourSound);
   const panner = audioContext.createStereoPanner();
   track.connect(panner).connect(audioContext.destination);
@@ -502,6 +506,15 @@ if (carousel) {
   let isPouring = false;
   let audioUnlocked = false;
   let motionAllowed = false;
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      // Stop pouring immediately
+      fadeOutAudio(pourSound, 150);
+      isPouring = false;
+    }
+  });
+
 
   // Fade-out helper
   function fadeOutAudio(audio, duration = 200) {
@@ -560,7 +573,9 @@ if (carousel) {
   window.addEventListener("devicemotion", (e) => {
     if (!motionAllowed || !audioUnlocked) return;
 
-    const tiltX = e.accelerationIncludingGravity.x;
+    const rawTiltX = e.accelerationIncludingGravity.x;
+    smoothedTiltX = smoothedTiltX + (rawTiltX - smoothedTiltX) * smoothingFactor;
+
 
     // Convert tilt to a 0–1 intensity
     let intensity = Math.abs(tiltX) / 8;
