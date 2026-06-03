@@ -486,13 +486,62 @@ if (carousel) {
     }, 350);
   });
 
+  // --- AUDIO SETUP ---
   let pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
+  pourSound.loop = false;     // long sound, no looping
   pourSound.volume = 0;
   pourSound.pause();
 
   let isPouring = false;
+  let audioUnlocked = false;
+  let motionAllowed = false;
 
+  // --- AUDIO UNLOCK (required on iOS + Android) ---
+  function unlockAudio() {
+    if (!audioUnlocked) {
+      pourSound.play().then(() => {
+        pourSound.pause();
+        audioUnlocked = true;
+        console.log("Audio unlocked");
+      }).catch(() => {
+        console.log("Audio unlock failed, waiting for user gesture");
+      });
+    }
+  }
+
+  // --- MOTION PERMISSION (iOS only) ---
+  async function requestMotionPermission() {
+    if (typeof DeviceMotionEvent !== "undefined" &&
+        typeof DeviceMotionEvent.requestPermission === "function") {
+
+      try {
+        const response = await DeviceMotionEvent.requestPermission();
+        if (response === "granted") {
+          motionAllowed = true;
+          console.log("Motion permission granted");
+        } else {
+          console.log("Motion permission denied");
+        }
+      } catch (err) {
+        console.log("Motion permission error:", err);
+      }
+
+    } else {
+      // Android or older iOS — no permission needed
+      motionAllowed = true;
+    }
+  }
+
+  // --- USER GESTURE REQUIRED FOR BOTH AUDIO + MOTION ---
+  document.body.addEventListener("click", async () => {
+    unlockAudio();
+    await requestMotionPermission();
+  });
+
+  // --- MAIN TILT HANDLER ---
   window.addEventListener("devicemotion", (e) => {
+    if (!motionAllowed || !audioUnlocked) return;
+
     const tiltX = e.accelerationIncludingGravity.x;
 
     // Convert tilt to a 0–1 intensity
