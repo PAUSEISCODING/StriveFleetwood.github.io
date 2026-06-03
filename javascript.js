@@ -233,8 +233,9 @@ document.querySelectorAll('[data-type="video"]').forEach(item => {
   // carousel shenanigans
 
 const carousel = document.querySelector('.carousel');
+const cards = document.querySelectorAll('.carousel-card');
 
-if (carousel) {
+if (carousel && cards.length > 0) {
   const cards = document.querySelectorAll('.carousel-card');
 
   const cardRect = cards[0].getBoundingClientRect();
@@ -537,7 +538,7 @@ if (carousel) {
 
 // Only enable pouring on the menu page
 const page = window.location.pathname.split("/").pop();
-const isMenuPage = page === "menus.html";
+const isMenuPage = window.location.pathname.includes("menus");
 
 if (isMenuPage) {
 
@@ -548,6 +549,21 @@ if (isMenuPage) {
 
   let smoothedTiltX = 0;
   const smoothingFactor = 0.1;
+
+  pourSound.addEventListener("canplaythrough", () => {
+    console.log("Sound loaded!");
+  });
+
+  // Only allow pouring when phone is upright
+  const upright = Math.abs(e.accelerationIncludingGravity.z) > 7;
+  if (!upright) {
+    // Stop pouring if phone is not upright
+    if (isPouring) {
+      fadeOutAudio(pourSound, 200);
+      isPouring = false;
+    }
+    return;
+  }
 
   // Web Audio routing
   const track = audioContext.createMediaElementSource(pourSound);
@@ -608,7 +624,9 @@ if (isMenuPage) {
 
   // USER TAP REQUIRED
   document.body.addEventListener("click", async () => {
+    console.log("Motion allowed:", motionAllowed);
     unlockAudio();
+    console.log("Audio unlocked:", audioUnlocked);
     await requestMotionPermission();
   });
 
@@ -618,6 +636,10 @@ if (isMenuPage) {
       fadeOutAudio(pourSound, 150);
       isPouring = false;
     }
+  });
+
+  window.addEventListener("devicemotion", (e) => {
+    console.log("Tilt detected:", e.accelerationIncludingGravity.x);
   });
 
   // MAIN TILT HANDLER
@@ -644,6 +666,7 @@ if (isMenuPage) {
         pourSound.currentTime = 0;
         pourSound.play();
         isPouring = true;
+        console.log("Pour triggered, intensity:", intensity);
       }
 
       pourSound.volume = intensity * 0.6;
