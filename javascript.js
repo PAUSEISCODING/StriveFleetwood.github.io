@@ -488,8 +488,14 @@ if (carousel) {
 
   // Pour sound and tilt controls
 
-  let pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
   pourSound.loop = false;
+
+  const track = audioContext.createMediaElementSource(pourSound);
+  const panner = audioContext.createStereoPanner();
+  track.connect(panner).connect(audioContext.destination);
+
   pourSound.volume = 0;
   pourSound.pause();
 
@@ -520,6 +526,7 @@ if (carousel) {
   // AUDIO UNLOCK
   function unlockAudio() {
     if (!audioUnlocked) {
+      audioContext.resume();
       pourSound.play().then(() => {
         pourSound.pause();
         audioUnlocked = true;
@@ -558,6 +565,10 @@ if (carousel) {
     // Convert tilt to a 0–1 intensity
     let intensity = Math.abs(tiltX) / 8;
     intensity = Math.min(intensity, 1);
+
+    // Map tilt to stereo pan (-1 to +1)
+    let panValue = Math.max(-1, Math.min(tiltX / 8, 1));
+    panner.pan.value = panValue;
 
     // Require a stronger tilt to start pouring
     if (intensity > 0.2) {
