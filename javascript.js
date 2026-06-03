@@ -6,10 +6,7 @@ window.addEventListener("scroll", () => {
   text.style.transform = "translateY(-" + move + "px)";
 });
 
-
-/* ---------------------------------------------
-   THEME TOGGLE
---------------------------------------------- */
+// color mode toggle
 
 const btn = document.getElementById("modeToggle");
 let isDarkMode = document.body.classList.contains("dark");
@@ -45,10 +42,7 @@ btn.addEventListener("click", () => {
   setColorMode(!isDarkMode);
 });
 
-
-/* ---------------------------------------------
-   BURGER NAV
---------------------------------------------- */
+// burger menu toggle
 
 const burger = document.getElementById("burger");
 const nav = document.getElementById("navLinks");
@@ -59,9 +53,6 @@ burger.addEventListener("click", () => {
 });
 
 
-/* ---------------------------------------------
-   PROJECT FILTER
---------------------------------------------- */
 
 const projectFilter = document.getElementById("projectFilter");
 const projectCards = document.querySelectorAll(".project-card");
@@ -76,10 +67,7 @@ if (projectFilter && projectCards.length) {
   });
 }
 
-
-/* ---------------------------------------------
-   LIGHTBOX
---------------------------------------------- */
+// lightbox stuffs
 
 const items = document.querySelectorAll('.gallery-item, .gallery-collection');
 const lightbox = document.getElementById('lightbox');
@@ -195,10 +183,7 @@ if (lightbox) {
   });
 }
 
-
-/* ---------------------------------------------
-   VIDEO THUMBNAILS
---------------------------------------------- */
+// video thumbnail generation
 
 function generateVideoThumbnail(videoSrc, callback) {
   const video = document.createElement('video');
@@ -245,10 +230,7 @@ document.querySelectorAll('[data-type="video"]').forEach(item => {
   });
 });
 
-
-/* ---------------------------------------------
-   CAROUSEL
---------------------------------------------- */
+  // carousel shenanigans
 
 const carousel = document.querySelector('.carousel');
 
@@ -556,7 +538,9 @@ if (carousel) {
 // Only enable pouring on the menu page
 const page = window.location.pathname.split("/").pop();
 const isMenuPage = page === "menus.html";
+
 if (!isMenuPage) {
+
   // Pour sound and tilt controls
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
   const pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
