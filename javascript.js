@@ -491,8 +491,6 @@ if (carousel) {
   const isMenuPage = page === "menus.html";
   if (!isMenuPage) return;
 
-  if (!isMenuPage) return;
-
   // Pour sound and tilt controls
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
   const pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
