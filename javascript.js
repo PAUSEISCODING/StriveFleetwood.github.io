@@ -1,66 +1,85 @@
-const text = document.querySelector(".scroll-text")
+const text = document.querySelector(".scroll-text");
 
 window.addEventListener("scroll", () => {
-  let y = window.scrollY
-  let move = Math.min(y * 0.5, 150)
-  text.style.transform = "translateY(-" + move + "px)"
-})
+  let y = window.scrollY;
+  let move = Math.min(y * 0.5, 150);
+  text.style.transform = "translateY(-" + move + "px)";
+});
 
-const btn = document.getElementById("modeToggle")
-let isDarkMode = document.body.classList.contains("dark")
+
+/* ---------------------------------------------
+   THEME TOGGLE
+--------------------------------------------- */
+
+const btn = document.getElementById("modeToggle");
+let isDarkMode = document.body.classList.contains("dark");
 
 function setColorMode(darkMode) {
-  isDarkMode = darkMode
-  document.body.classList.toggle("dark", darkMode)
-  document.body.classList.toggle("light", !darkMode)
+  isDarkMode = darkMode;
+  document.body.classList.toggle("dark", darkMode);
+  document.body.classList.toggle("light", !darkMode);
 
   document.querySelectorAll(".gallery-collection").forEach(el => {
-    el.classList.toggle("dark", darkMode)
-    el.classList.toggle("light", !darkMode)
-  })
-  document.querySelectorAll(".gallery-item").forEach(el => {
-    el.classList.toggle("dark", darkMode)
-    el.classList.toggle("light", !darkMode)
-  })
+    el.classList.toggle("dark", darkMode);
+    el.classList.toggle("light", !darkMode);
+  });
 
-  localStorage.setItem("colorMode", darkMode ? "dark" : "light")
+  document.querySelectorAll(".gallery-item").forEach(el => {
+    el.classList.toggle("dark", darkMode);
+    el.classList.toggle("light", !darkMode);
+  });
+
+  localStorage.setItem("colorMode", darkMode ? "dark" : "light");
 }
 
-const savedMode = localStorage.getItem("colorMode")
+const savedMode = localStorage.getItem("colorMode");
 if (savedMode === "dark" || savedMode === "light") {
-  document.body.classList.add("no-transition")
-  setColorMode(savedMode === "dark")
+  document.body.classList.add("no-transition");
+  setColorMode(savedMode === "dark");
   window.requestAnimationFrame(() => {
-    document.body.classList.remove("no-transition")
-  })
+    document.body.classList.remove("no-transition");
+  });
 }
 
 btn.addEventListener("click", () => {
-  setColorMode(!isDarkMode)
-})
+  setColorMode(!isDarkMode);
+});
 
-const burger = document.getElementById("burger")
-const nav = document.getElementById("navLinks")
+
+/* ---------------------------------------------
+   BURGER NAV
+--------------------------------------------- */
+
+const burger = document.getElementById("burger");
+const nav = document.getElementById("navLinks");
 
 burger.addEventListener("click", () => {
-  burger.classList.toggle("active")
-  nav.classList.toggle("active")
-})
+  burger.classList.toggle("active");
+  nav.classList.toggle("active");
+});
 
-const projectFilter = document.getElementById("projectFilter")
-const projectCards = document.querySelectorAll(".project-card")
+
+/* ---------------------------------------------
+   PROJECT FILTER
+--------------------------------------------- */
+
+const projectFilter = document.getElementById("projectFilter");
+const projectCards = document.querySelectorAll(".project-card");
 
 if (projectFilter && projectCards.length) {
   projectFilter.addEventListener("change", () => {
-    const filterValue = projectFilter.value
+    const filterValue = projectFilter.value;
     projectCards.forEach(card => {
-      const matches = filterValue === "all" || card.dataset.category === filterValue
-      card.style.display = matches ? "block" : "none"
-    })
-  })
+      const matches = filterValue === "all" || card.dataset.category === filterValue;
+      card.style.display = matches ? "block" : "none";
+    });
+  });
 }
 
-/* Lightbox stuffs */
+
+/* ---------------------------------------------
+   LIGHTBOX
+--------------------------------------------- */
 
 const items = document.querySelectorAll('.gallery-item, .gallery-collection');
 const lightbox = document.getElementById('lightbox');
@@ -143,19 +162,14 @@ function prevImage() {
 }
 
 if (lightbox) {
-  // Close button
   if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
-
-  // Arrows
   if (rightArrow) rightArrow.addEventListener('click', nextImage);
   if (leftArrow) leftArrow.addEventListener('click', prevImage);
 
-  // Background click
   lightbox.addEventListener('click', (e) => {
     if (e.target === lightbox) closeLightbox();
   });
 
-  // Keyboard controls
   document.addEventListener('keydown', (e) => {
     if (!lightbox.classList.contains("active")) return;
 
@@ -164,7 +178,6 @@ if (lightbox) {
     else if (e.key === 'ArrowLeft') prevImage();
   });
 
-  // Swipe support
   let startX = 0;
   let endX = 0;
 
@@ -174,19 +187,18 @@ if (lightbox) {
 
   lightbox.addEventListener('touchend', (e) => {
     endX = e.changedTouches[0].clientX;
-    handleSwipe();
-  });
-
-  function handleSwipe() {
     const diff = endX - startX;
-    if (Math.abs(diff) < 50) return;
-
-    if (diff > 0) prevImage();
-    else nextImage();
-  }
+    if (Math.abs(diff) >= 50) {
+      if (diff > 0) prevImage();
+      else nextImage();
+    }
+  });
 }
 
-// video thumbnail stuffs
+
+/* ---------------------------------------------
+   VIDEO THUMBNAILS
+--------------------------------------------- */
 
 function generateVideoThumbnail(videoSrc, callback) {
   const video = document.createElement('video');
@@ -195,7 +207,7 @@ function generateVideoThumbnail(videoSrc, callback) {
   video.muted = true;
 
   video.addEventListener('loadeddata', () => {
-    video.currentTime = 2.0; // grab frame at 2.0s
+    video.currentTime = 2.0;
   });
 
   video.addEventListener('seeked', () => {
@@ -233,27 +245,25 @@ document.querySelectorAll('[data-type="video"]').forEach(item => {
   });
 });
 
-// Carousel shenanigans
+
+/* ---------------------------------------------
+   CAROUSEL
+--------------------------------------------- */
 
 const carousel = document.querySelector('.carousel');
-if (carousel) {
 
+if (carousel) {
   const cards = document.querySelectorAll('.carousel-card');
 
-  // Measure card height (used for shadows)
   const cardRect = cards[0].getBoundingClientRect();
   const cardHeight = cardRect.height;
   const cardBottomOffset = cardHeight / 2;
-
-  //  Assign initial positions
 
   function assignInitialPositions() {
     cards.forEach((card, i) => {
       card.dataset.pos = i;
     });
   }
-
-  // Move wheel forward
 
   function scrollToNextCardCarousel() {
     const total = cards.length;
@@ -266,9 +276,6 @@ if (carousel) {
 
     apply3DWheel(true);
   }
-
-
-  // Move wheel backward
 
   function rotateBackwardOneStep() {
     const total = cards.length;
@@ -298,8 +305,6 @@ if (carousel) {
     return { x, z, scale, tilt };
   }
 
-  // Apply transforms to wheel
-
   function apply3DWheel(animated = true) {
     const total = cards.length;
     const radius = 480;
@@ -310,7 +315,6 @@ if (carousel) {
       const pos = parseInt(card.dataset.pos, 10);
       const logicalOffset = ((pos + 3) % total) - 3;
 
-      // Hide cards outside arc
       if (Math.abs(logicalOffset) > maxVisibleOffset) {
         card.style.opacity = 0;
         card.style.pointerEvents = "none";
@@ -342,9 +346,6 @@ if (carousel) {
       card.style.zIndex = Math.round(cfg.z);
     });
   }
-
-
-  // Reveal and close
 
   let revealedCard = null;
 
@@ -384,8 +385,6 @@ if (carousel) {
 
     if (revealedCard === card) revealedCard = null;
   }
-
-  // Click to rotate
 
   cards.forEach(card => {
     card.addEventListener("click", () => onCardClick(card));
@@ -430,8 +429,6 @@ if (carousel) {
     setTimeout(() => revealCard(targetCard), 350);
   }
 
-  // Swipe
-
   let touchStartX = 0;
   let touchEndX = 0;
 
@@ -441,10 +438,6 @@ if (carousel) {
 
   carousel.addEventListener("touchend", e => {
     touchEndX = e.changedTouches[0].clientX;
-    handleSwipe();
-  });
-
-  function handleSwipe() {
     const dx = touchEndX - touchStartX;
 
     if (Math.abs(dx) < 40) return;
@@ -454,21 +447,18 @@ if (carousel) {
     if (dx < 0) rotateBackwardOneStep();
     else scrollToNextCardCarousel();
 
-    // reveal the front card after the wheel settles
     setTimeout(() => {
       const front = getFrontCard();
       revealCard(front);
     }, 350);
-  }
-
-  // Carousel nav buttons
+  });
 
   const leftBtn = document.querySelector('.left-btn');
   const rightBtn = document.querySelector('.right-btn');
 
   leftBtn.addEventListener('click', () => {
     enterActiveMode();
-    scrollToNextCardCarousel(); // ← now moves forward
+    scrollToNextCardCarousel();
 
     setTimeout(() => {
       const front = getFrontCard();
@@ -478,7 +468,7 @@ if (carousel) {
 
   rightBtn.addEventListener('click', () => {
     enterActiveMode();
-    rotateBackwardOneStep(); // ← now moves backward
+    rotateBackwardOneStep();
 
     setTimeout(() => {
       const front = getFrontCard();
@@ -486,7 +476,6 @@ if (carousel) {
     }, 350);
   });
 
-  // Idle mode
   let mode = "idle";
   let idleLoopTimeout = null;
   let revealTimeout = null;
@@ -559,8 +548,6 @@ if (carousel) {
     }, 20000);
   }
 
-  // Initialise
-
   assignInitialPositions();
   apply3DWheel(false);
   enterIdleMode();
@@ -569,119 +556,120 @@ if (carousel) {
 // Only enable pouring on the menu page
 const page = window.location.pathname.split("/").pop();
 const isMenuPage = page === "menus.html";
-if (!isMenuPage) return;
+if (!isMenuPage) {
+  // Pour sound and tilt controls
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
+  pourSound.loop = false;
 
-// Pour sound and tilt controls
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-const pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
-pourSound.loop = false;
+  let smoothedTiltX = 0;
+  const smoothingFactor = 0.1;
 
-let smoothedTiltX = 0;
-const smoothingFactor = 0.1;
+  // Web Audio routing
+  const track = audioContext.createMediaElementSource(pourSound);
+  const panner = audioContext.createStereoPanner();
+  track.connect(panner).connect(audioContext.destination);
 
-// Web Audio routing
-const track = audioContext.createMediaElementSource(pourSound);
-const panner = audioContext.createStereoPanner();
-track.connect(panner).connect(audioContext.destination);
+  pourSound.volume = 0;
+  pourSound.pause();
 
-pourSound.volume = 0;
-pourSound.pause();
+  let isPouring = false;
+  let audioUnlocked = false;
+  let motionAllowed = false;
 
-let isPouring = false;
-let audioUnlocked = false;
-let motionAllowed = false;
+  // Fade-out helper
+  function fadeOutAudio(audio, duration = 200) {
+    const startVolume = audio.volume;
+    const steps = 20;
+    const stepTime = duration / steps;
 
-// Fade-out helper
-function fadeOutAudio(audio, duration = 200) {
-  const startVolume = audio.volume;
-  const steps = 20;
-  const stepTime = duration / steps;
+    let currentStep = 0;
 
-  let currentStep = 0;
+    const fade = setInterval(() => {
+      currentStep++;
+      audio.volume = startVolume * (1 - currentStep / steps);
 
-  const fade = setInterval(() => {
-    currentStep++;
-    audio.volume = startVolume * (1 - currentStep / steps);
-
-    if (currentStep >= steps) {
-      clearInterval(fade);
-      audio.volume = 0;
-      audio.pause();
-    }
-  }, stepTime);
-}
-
-// AUDIO UNLOCK
-function unlockAudio() {
-  if (!audioUnlocked) {
-    audioContext.resume();
-    // DO NOT play the sound here — it causes the burst
-    audioUnlocked = true;
-  }
-}
-
-// MOTION PERMISSION (iOS)
-async function requestMotionPermission() {
-  if (typeof DeviceMotionEvent !== "undefined" &&
-      typeof DeviceMotionEvent.requestPermission === "function") {
-
-    try {
-      const response = await DeviceMotionEvent.requestPermission();
-      if (response === "granted") {
-        motionAllowed = true;
+      if (currentStep >= steps) {
+        clearInterval(fade);
+        audio.volume = 0;
+        audio.pause();
       }
-    } catch (err) {}
-  } else {
-    motionAllowed = true;
+    }, stepTime);
   }
-}
 
-// USER TAP REQUIRED
-document.body.addEventListener("click", async () => {
-  unlockAudio();
-  await requestMotionPermission();
-});
-
-// Stop pouring when screen is off or tab hidden
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    fadeOutAudio(pourSound, 150);
-    isPouring = false;
-  }
-});
-
-// MAIN TILT HANDLER
-window.addEventListener("devicemotion", (e) => {
-  if (!motionAllowed || !audioUnlocked) return;
-  if (document.hidden) return; // extra safety
-
-  const rawTiltX = e.accelerationIncludingGravity.x;
-
-  // Smooth tilt
-  smoothedTiltX = smoothedTiltX + (rawTiltX - smoothedTiltX) * smoothingFactor;
-
-  // Convert tilt to a 0–1 intensity
-  let intensity = Math.abs(smoothedTiltX) / 8;
-  intensity = Math.min(intensity, 1);
-
-  // Stereo pan
-  let panValue = Math.max(-1, Math.min(smoothedTiltX / 8, 1));
-  panner.pan.value = panValue;
-
-  // Require a stronger tilt to start pouring
-  if (intensity > 0.2) {
-    if (!isPouring) {
-      pourSound.currentTime = 0;
-      pourSound.play();
-      isPouring = true;
+  // AUDIO UNLOCK
+  function unlockAudio() {
+    if (!audioUnlocked) {
+      audioContext.resume();
+      // DO NOT play the sound here — it causes the burst
+      audioUnlocked = true;
     }
+  }
 
-    pourSound.volume = intensity * 0.6;
+  // MOTION PERMISSION (iOS)
+  async function requestMotionPermission() {
+    if (typeof DeviceMotionEvent !== "undefined" &&
+        typeof DeviceMotionEvent.requestPermission === "function") {
 
-  } else {
-    if (isPouring) {
-      fadeOutAudio(pourSound, 200);
+      try {
+        const response = await DeviceMotionEvent.requestPermission();
+        if (response === "granted") {
+          motionAllowed = true;
+        }
+      } catch (err) {}
+    } else {
+      motionAllowed = true;
+    }
+  }
+
+  // USER TAP REQUIRED
+  document.body.addEventListener("click", async () => {
+    unlockAudio();
+    await requestMotionPermission();
+  });
+
+  // Stop pouring when screen is off or tab hidden
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      fadeOutAudio(pourSound, 150);
       isPouring = false;
     }
-  }
-});
+  });
+
+  // MAIN TILT HANDLER
+  window.addEventListener("devicemotion", (e) => {
+    if (!motionAllowed || !audioUnlocked) return;
+    if (document.hidden) return; // extra safety
+
+    const rawTiltX = e.accelerationIncludingGravity.x;
+
+    // Smooth tilt
+    smoothedTiltX = smoothedTiltX + (rawTiltX - smoothedTiltX) * smoothingFactor;
+
+    // Convert tilt to a 0–1 intensity
+    let intensity = Math.abs(smoothedTiltX) / 8;
+    intensity = Math.min(intensity, 1);
+
+    // Stereo pan
+    let panValue = Math.max(-1, Math.min(smoothedTiltX / 8, 1));
+    panner.pan.value = panValue;
+
+    // Require a stronger tilt to start pouring
+    if (intensity > 0.2) {
+      if (!isPouring) {
+        pourSound.currentTime = 0;
+        pourSound.play();
+        isPouring = true;
+      }
+
+      pourSound.volume = intensity * 0.6;
+
+    } else {
+      if (isPouring) {
+        fadeOutAudio(pourSound, 200);
+        isPouring = false;
+      }
+    }
+  });
+};
+
