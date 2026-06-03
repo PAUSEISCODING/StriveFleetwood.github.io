@@ -486,126 +486,6 @@ if (carousel) {
     }, 350);
   });
 
-  // Only enable pouring on the menu page
-  const page = window.location.pathname.split("/").pop();
-  const isMenuPage = page === "menus.html";
-  if (!isMenuPage) return;
-
-  // Pour sound and tilt controls
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  const pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
-  pourSound.loop = false;
-
-  let smoothedTiltX = 0;
-  const smoothingFactor = 0.1;
-
-  // Web Audio routing
-  const track = audioContext.createMediaElementSource(pourSound);
-  const panner = audioContext.createStereoPanner();
-  track.connect(panner).connect(audioContext.destination);
-
-  pourSound.volume = 0;
-  pourSound.pause();
-
-  let isPouring = false;
-  let audioUnlocked = false;
-  let motionAllowed = false;
-
-  // Fade-out helper
-  function fadeOutAudio(audio, duration = 200) {
-    const startVolume = audio.volume;
-    const steps = 20;
-    const stepTime = duration / steps;
-
-    let currentStep = 0;
-
-    const fade = setInterval(() => {
-      currentStep++;
-      audio.volume = startVolume * (1 - currentStep / steps);
-
-      if (currentStep >= steps) {
-        clearInterval(fade);
-        audio.volume = 0;
-        audio.pause();
-      }
-    }, stepTime);
-  }
-
-  // AUDIO UNLOCK
-  function unlockAudio() {
-    if (!audioUnlocked) {
-      audioContext.resume();
-      // DO NOT play the sound here — it causes the burst
-      audioUnlocked = true;
-    }
-  }
-
-  // MOTION PERMISSION (iOS)
-  async function requestMotionPermission() {
-    if (typeof DeviceMotionEvent !== "undefined" &&
-        typeof DeviceMotionEvent.requestPermission === "function") {
-
-      try {
-        const response = await DeviceMotionEvent.requestPermission();
-        if (response === "granted") {
-          motionAllowed = true;
-        }
-      } catch (err) {}
-    } else {
-      motionAllowed = true;
-    }
-  }
-
-  // USER TAP REQUIRED
-  document.body.addEventListener("click", async () => {
-    unlockAudio();
-    await requestMotionPermission();
-  });
-
-  // Stop pouring when screen is off or tab hidden
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      fadeOutAudio(pourSound, 150);
-      isPouring = false;
-    }
-  });
-
-  // MAIN TILT HANDLER
-  window.addEventListener("devicemotion", (e) => {
-    if (!motionAllowed || !audioUnlocked) return;
-    if (document.hidden) return; // extra safety
-
-    const rawTiltX = e.accelerationIncludingGravity.x;
-
-    // Smooth tilt
-    smoothedTiltX = smoothedTiltX + (rawTiltX - smoothedTiltX) * smoothingFactor;
-
-    // Convert tilt to a 0–1 intensity
-    let intensity = Math.abs(smoothedTiltX) / 8;
-    intensity = Math.min(intensity, 1);
-
-    // Stereo pan
-    let panValue = Math.max(-1, Math.min(smoothedTiltX / 8, 1));
-    panner.pan.value = panValue;
-
-    // Require a stronger tilt to start pouring
-    if (intensity > 0.2) {
-      if (!isPouring) {
-        pourSound.currentTime = 0;
-        pourSound.play();
-        isPouring = true;
-      }
-
-      pourSound.volume = intensity * 0.6;
-
-    } else {
-      if (isPouring) {
-        fadeOutAudio(pourSound, 200);
-        isPouring = false;
-      }
-    }
-  });
-
   // Idle mode
   let mode = "idle";
   let idleLoopTimeout = null;
@@ -685,3 +565,123 @@ if (carousel) {
   apply3DWheel(false);
   enterIdleMode();
 }
+
+// Only enable pouring on the menu page
+const page = window.location.pathname.split("/").pop();
+const isMenuPage = page === "menus.html";
+if (!isMenuPage) return;
+
+// Pour sound and tilt controls
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
+pourSound.loop = false;
+
+let smoothedTiltX = 0;
+const smoothingFactor = 0.1;
+
+// Web Audio routing
+const track = audioContext.createMediaElementSource(pourSound);
+const panner = audioContext.createStereoPanner();
+track.connect(panner).connect(audioContext.destination);
+
+pourSound.volume = 0;
+pourSound.pause();
+
+let isPouring = false;
+let audioUnlocked = false;
+let motionAllowed = false;
+
+// Fade-out helper
+function fadeOutAudio(audio, duration = 200) {
+  const startVolume = audio.volume;
+  const steps = 20;
+  const stepTime = duration / steps;
+
+  let currentStep = 0;
+
+  const fade = setInterval(() => {
+    currentStep++;
+    audio.volume = startVolume * (1 - currentStep / steps);
+
+    if (currentStep >= steps) {
+      clearInterval(fade);
+      audio.volume = 0;
+      audio.pause();
+    }
+  }, stepTime);
+}
+
+// AUDIO UNLOCK
+function unlockAudio() {
+  if (!audioUnlocked) {
+    audioContext.resume();
+    // DO NOT play the sound here — it causes the burst
+    audioUnlocked = true;
+  }
+}
+
+// MOTION PERMISSION (iOS)
+async function requestMotionPermission() {
+  if (typeof DeviceMotionEvent !== "undefined" &&
+      typeof DeviceMotionEvent.requestPermission === "function") {
+
+    try {
+      const response = await DeviceMotionEvent.requestPermission();
+      if (response === "granted") {
+        motionAllowed = true;
+      }
+    } catch (err) {}
+  } else {
+    motionAllowed = true;
+  }
+}
+
+// USER TAP REQUIRED
+document.body.addEventListener("click", async () => {
+  unlockAudio();
+  await requestMotionPermission();
+});
+
+// Stop pouring when screen is off or tab hidden
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    fadeOutAudio(pourSound, 150);
+    isPouring = false;
+  }
+});
+
+// MAIN TILT HANDLER
+window.addEventListener("devicemotion", (e) => {
+  if (!motionAllowed || !audioUnlocked) return;
+  if (document.hidden) return; // extra safety
+
+  const rawTiltX = e.accelerationIncludingGravity.x;
+
+  // Smooth tilt
+  smoothedTiltX = smoothedTiltX + (rawTiltX - smoothedTiltX) * smoothingFactor;
+
+  // Convert tilt to a 0–1 intensity
+  let intensity = Math.abs(smoothedTiltX) / 8;
+  intensity = Math.min(intensity, 1);
+
+  // Stereo pan
+  let panValue = Math.max(-1, Math.min(smoothedTiltX / 8, 1));
+  panner.pan.value = panValue;
+
+  // Require a stronger tilt to start pouring
+  if (intensity > 0.2) {
+    if (!isPouring) {
+      pourSound.currentTime = 0;
+      pourSound.play();
+      isPouring = true;
+    }
+
+    pourSound.volume = intensity * 0.6;
+
+  } else {
+    if (isPouring) {
+      fadeOutAudio(pourSound, 200);
+      isPouring = false;
+    }
+  }
+});
