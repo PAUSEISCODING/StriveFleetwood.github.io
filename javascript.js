@@ -486,9 +486,10 @@ if (carousel) {
     }, 350);
   });
 
-  // --- AUDIO SETUP ---
+  // Pour sound and tilt controls
+
   let pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
-  pourSound.loop = false;     // long sound, no looping
+  pourSound.loop = false;
   pourSound.volume = 0;
   pourSound.pause();
 
@@ -496,20 +497,37 @@ if (carousel) {
   let audioUnlocked = false;
   let motionAllowed = false;
 
-  // --- AUDIO UNLOCK (required on iOS + Android) ---
+  // Fade-out helper
+  function fadeOutAudio(audio, duration = 200) {
+    const startVolume = audio.volume;
+    const steps = 20;
+    const stepTime = duration / steps;
+
+    let currentStep = 0;
+
+    const fade = setInterval(() => {
+      currentStep++;
+      audio.volume = startVolume * (1 - currentStep / steps);
+
+      if (currentStep >= steps) {
+        clearInterval(fade);
+        audio.volume = 0;
+        audio.pause();
+      }
+    }, stepTime);
+  }
+
+  // AUDIO UNLOCK
   function unlockAudio() {
     if (!audioUnlocked) {
       pourSound.play().then(() => {
         pourSound.pause();
         audioUnlocked = true;
-        console.log("Audio unlocked");
-      }).catch(() => {
-        console.log("Audio unlock failed, waiting for user gesture");
-      });
+      }).catch(() => {});
     }
   }
 
-  // --- MOTION PERMISSION (iOS only) ---
+  // MOTION PERMISSION (iOS)
   async function requestMotionPermission() {
     if (typeof DeviceMotionEvent !== "undefined" &&
         typeof DeviceMotionEvent.requestPermission === "function") {
@@ -518,27 +536,20 @@ if (carousel) {
         const response = await DeviceMotionEvent.requestPermission();
         if (response === "granted") {
           motionAllowed = true;
-          console.log("Motion permission granted");
-        } else {
-          console.log("Motion permission denied");
         }
-      } catch (err) {
-        console.log("Motion permission error:", err);
-      }
-
+      } catch (err) {}
     } else {
-      // Android or older iOS — no permission needed
       motionAllowed = true;
     }
   }
 
-  // --- USER GESTURE REQUIRED FOR BOTH AUDIO + MOTION ---
+  // USER TAP REQUIRED
   document.body.addEventListener("click", async () => {
     unlockAudio();
     await requestMotionPermission();
   });
 
-  // --- MAIN TILT HANDLER ---
+  // MAIN TILT HANDLER
   window.addEventListener("devicemotion", (e) => {
     if (!motionAllowed || !audioUnlocked) return;
 
@@ -548,7 +559,8 @@ if (carousel) {
     let intensity = Math.abs(tiltX) / 8;
     intensity = Math.min(intensity, 1);
 
-    if (intensity > 0.05) {
+    // Require a stronger tilt to start pouring
+    if (intensity > 0.2) {
       if (!isPouring) {
         pourSound.currentTime = 0;
         pourSound.play();
@@ -557,11 +569,12 @@ if (carousel) {
 
       // Smooth fade-in based on tilt
       pourSound.volume = intensity * 0.6;
+
     } else {
-      // Fade out and stop
-      pourSound.volume = 0;
-      pourSound.pause();
-      isPouring = false;
+      if (isPouring) {
+        fadeOutAudio(pourSound, 200);
+        isPouring = false;
+      }
     }
   });
 
