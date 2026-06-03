@@ -487,7 +487,7 @@ if (carousel) {
   });
 
   // Only enable pouring on the menu page
-  const isMenuPage = window.location.pathname.includes("menu");
+  const isMenuPage = window.location.pathname.endsWith("menus.html");
   if (!isMenuPage) return;
 
   // Pour sound and tilt controls
