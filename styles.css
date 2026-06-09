@@ -32,6 +32,7 @@ body {
   color: #ffffff;
   line-height: 1.6;
   font-weight: 400;
+  overflow-x: hidden;
 }
 
 .scroll-text {
@@ -1117,6 +1118,13 @@ body.dark .card-shadow {
 body.light .carousel-btn {
   background: rgba(0, 0, 0, 1);
   color: rgb(255, 255, 255);
+}
+
+@media (max-width: 600px) {
+  .carousel {
+    transform: scale(0.75);
+    transform-origin: top center;
+  }
 }
 
 /* NEWS STUFF - no touchy */
