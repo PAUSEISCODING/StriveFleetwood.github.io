@@ -1061,7 +1061,7 @@ body.dark .carousel-ground {
 .card-shadow {
   position: absolute;
   left: 50%;
-  bottom: -60px; /* how far down the card shadow is */
+  bottom: -60px;
   width: 200px;
   height: 40px;
   background: rgba(0,0,0,0.25);
@@ -1081,12 +1081,12 @@ body.dark .card-shadow {
 }
 
 .featured-carousel-wrapper {
-  position: relative; /* ensure buttons anchor here */
+  position: relative;
 }
 
 .carousel-btn {
   position: absolute;
-  top: 50%; /* vertical centre of carousel */
+  top: 50%;
   transform: translateY(-50%);
   z-index: 50;
   background: rgba(255, 255, 255, 1);
@@ -1099,12 +1099,12 @@ body.dark .card-shadow {
   border-radius: 50%;
   cursor: pointer;
   backdrop-filter: blur(6px);
-  display: flex;              /* ⭐ centres arrow horizontally */
-  align-items: center;        /* ⭐ centres arrow vertically */
-  justify-content: center;    /* ⭐ centres arrow perfectly */
+  display: flex;              
+  align-items: center;        
+  justify-content: center;    
   transition: background 0.35s ease, transform 0.35s ease;
   line-height: 1;
-  padding-bottom: 4px; /* visual tweak to perfectly centre the arrow */
+  padding-bottom: 4px; 
 }
 
 .carousel-btn:hover {
