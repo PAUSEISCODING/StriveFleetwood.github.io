@@ -1126,7 +1126,7 @@ body.light .carousel-btn {
   color: rgb(255, 255, 255);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 750px) {
 
 
   .carousel {
@@ -1148,6 +1148,12 @@ body.light .carousel-btn {
     bottom: -40px;
   }
 
+  .carousel-track {
+    transform: scale(0.85);
+    transform-origin: center;
+  }
+
+
   .carousel-ground {
     width: 320px;
     height: 150px;
@@ -1165,6 +1171,13 @@ body.light .carousel-btn {
 
   body {
     overflow-x: hidden !important;
+  }
+
+  .carousel-track {
+    overflow: hidden !important;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
   }
 }
 
