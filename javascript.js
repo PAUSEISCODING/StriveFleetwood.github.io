@@ -248,6 +248,20 @@ if (carousel && cards.length > 0) {
     });
   }
 
+  function rotateWithClose(rotateFn) {
+    if (revealedCard) {
+      closeCard(revealedCard);
+
+      // Wait for close animation to finish
+      setTimeout(() => {
+        rotateFn();
+      }, 600);
+
+    } else {
+      rotateFn();
+    }
+  }
+
   function scrollToNextCardCarousel() {
     const total = cards.length;
 
@@ -290,7 +304,7 @@ if (carousel && cards.length > 0) {
 
   function apply3DWheel(animated = true) {
     const total = cards.length;
-    const radius = window.innerWidth < 750 ? 260 : 480;
+    const radius = window.innerWidth < 600 ? 260 : 480;
     const tiltStrength = 12;
     const maxVisibleOffset = 2;
 
@@ -387,6 +401,12 @@ if (carousel && cards.length > 0) {
   }
 
   function rotateToCard(targetCard) {
+    rotateWithClose(() => {
+      rotateToCardInternal(targetCard);
+    });
+  }
+
+  function rotateToCardInternal(targetCard) {
     const total = cards.length;
     const targetPos = parseInt(targetCard.dataset.pos, 10);
     const logicalOffset = ((targetPos + 3) % total) - 3;
@@ -427,13 +447,12 @@ if (carousel && cards.length > 0) {
 
     enterActiveMode();
 
-    if (dx < 0) rotateBackwardOneStep();
-    else scrollToNextCardCarousel();
+    rotateWithClose(() => {
+      if (dx < 0) rotateBackwardOneStep();
+      else scrollToNextCardCarousel();
 
-    setTimeout(() => {
-      const front = getFrontCard();
-      revealCard(front);
-    }, 350);
+      setTimeout(() => revealCard(getFrontCard()), 350);
+    });
   });
 
   const leftBtn = document.querySelector('.left-btn');
@@ -441,22 +460,18 @@ if (carousel && cards.length > 0) {
 
   leftBtn.addEventListener('click', () => {
     enterActiveMode();
-    scrollToNextCardCarousel();
-
-    setTimeout(() => {
-      const front = getFrontCard();
-      revealCard(front);
-    }, 350);
+    rotateWithClose(() => {
+      scrollToNextCardCarousel();
+      setTimeout(() => revealCard(getFrontCard()), 350);
+    });
   });
 
   rightBtn.addEventListener('click', () => {
     enterActiveMode();
-    rotateBackwardOneStep();
-
-    setTimeout(() => {
-      const front = getFrontCard();
-      revealCard(front);
-    }, 350);
+    rotateWithClose(() => {
+      rotateBackwardOneStep();
+      setTimeout(() => revealCard(getFrontCard()), 350);
+    });
   });
 
   let mode = "idle";
@@ -635,7 +650,7 @@ if (isMenuPage) {
 
     const g = e.accelerationIncludingGravity;
 
-    // Only allow pouring when phone is upright
+    // only allow pouring when phone is upright
     const upright =
       Math.abs(g.z) > Math.abs(g.x) &&
       Math.abs(g.z) > Math.abs(g.y);
