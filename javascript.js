@@ -290,7 +290,7 @@ if (carousel && cards.length > 0) {
 
   function apply3DWheel(animated = true) {
     const total = cards.length;
-    const radius = 480;
+    const radius = window.innerWidth < 600 ? 260 : 480;
     const tiltStrength = 12;
     const maxVisibleOffset = 2;
 

@@ -1127,6 +1127,29 @@ body.light .carousel-btn {
   }
 }
 
+@media (max-width: 600px) {
+  .carousel-card {
+    width: 160px;
+    height: 200px;
+  }
+
+  .card-shadow {
+    width: 120px;
+    height: 30px;
+  }
+}
+
+@media (max-width: 600px) {
+  .carousel-ground {
+    width: 400px;
+    height: 200px;
+    transform:
+      translate(-50%, -50%)
+      rotateX(90deg)
+      translateZ(200px);
+  }
+}
+
 /* NEWS STUFF - no touchy */
 
 .social-feed {
