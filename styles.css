@@ -977,7 +977,6 @@ body.light .project-card:hover {
     translate(-50%, -50%)
     var(--wheel-transform)
     var(--reveal-shift, translateX(0))
-
 }
 
 .card-top {
@@ -1038,6 +1037,7 @@ body.light .project-card:hover {
 }
 
 .carousel-ground {
+  background-color: rgba(0, 0, 0, 0);
   position: absolute;
   left: 50%;
   top: 50%;
@@ -1055,7 +1055,7 @@ body.light .project-card:hover {
 
 
 body.dark .carousel-ground {
-  background: rgba(0,0,0,0.15);
+  background: rgba(0,0,0,0);
 }
 
 .card-shadow {
