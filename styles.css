@@ -1166,13 +1166,6 @@ body.light .carousel-btn {
   body {
     overflow-x: hidden !important;
   }
-
-  .carousel-track {
-    overflow: hidden !important;
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-  }
 }
 
 /* NEWS STUFF - no touchy */

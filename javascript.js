@@ -536,13 +536,13 @@ if (carousel && cards.length > 0) {
   enterIdleMode();
 }
 
-// Only enable pouring on the menu page
+// only enable pouring on the menu page
 const page = window.location.pathname.split("/").pop();
 const isMenuPage = window.location.pathname.includes("menus");
 
 if (isMenuPage) {
 
-  // Pour sound and tilt controls
+  // pour sound and tilt controls
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
   const pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
   pourSound.loop = false;
@@ -554,7 +554,6 @@ if (isMenuPage) {
     console.log("Sound loaded!");
   });
 
-  // Web Audio routing
   const track = audioContext.createMediaElementSource(pourSound);
   const panner = audioContext.createStereoPanner();
   track.connect(panner).connect(audioContext.destination);
@@ -566,7 +565,6 @@ if (isMenuPage) {
   let audioUnlocked = false;
   let motionAllowed = false;
 
-  // Fade-out helper
   function fadeOutAudio(audio, duration = 200) {
     const startVolume = audio.volume;
     const steps = 20;
@@ -586,16 +584,15 @@ if (isMenuPage) {
     }, stepTime);
   }
 
-  // AUDIO UNLOCK
   function unlockAudio() {
     if (!audioUnlocked) {
       audioContext.resume();
-      // DO NOT play the sound here — it causes the burst
+      // DO NOT play the sound here — it causes the Extinction event
       audioUnlocked = true;
     }
   }
 
-  // MOTION PERMISSION (iOS)
+  // motion permission (iOS)
   async function requestMotionPermission() {
     if (typeof DeviceMotionEvent !== "undefined" &&
         typeof DeviceMotionEvent.requestPermission === "function") {
@@ -611,7 +608,6 @@ if (isMenuPage) {
     }
   }
 
-  // USER TAP REQUIRED
   document.body.addEventListener("click", async () => {
     console.log("Motion allowed:", motionAllowed);
     unlockAudio();
