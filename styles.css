@@ -1121,32 +1121,55 @@ body.light .carousel-btn {
 }
 
 @media (max-width: 600px) {
-  .carousel {
-    transform: scale(0.75);
-    transform-origin: top center;
-  }
-}
 
-@media (max-width: 600px) {
+  .carousel {
+    transform: scale(0.72);
+    transform-origin: top center;
+    height: 420px;
+    overflow: visible;
+  }
+
   .carousel-card {
-    width: 160px;
-    height: 200px;
+    width: 170px;
+    height: 220px;
+  }
+
+  .card-top,
+  .card-details {
+    border-radius: 10px;
   }
 
   .card-shadow {
     width: 120px;
-    height: 30px;
+    height: 28px;
+    bottom: -40px;
   }
-}
 
-@media (max-width: 600px) {
   .carousel-ground {
-    width: 400px;
-    height: 200px;
+    width: 420px;
+    height: 180px;
     transform:
       translate(-50%, -50%)
       rotateX(90deg)
-      translateZ(200px);
+      translateZ(220px);
+  }
+
+  .left-btn {
+    left: -20px;
+  }
+
+  .right-btn {
+    right: -20px;
+  }
+
+  .carousel-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 2rem;
+  }
+
+  body {
+    overflow-x: hidden !important;
   }
 }
 
