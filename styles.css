@@ -35,6 +35,12 @@ body {
   overflow-x: hidden;
 }
 
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 .scroll-text {
   transform: translateY(0);
 }
@@ -1159,6 +1165,13 @@ body.light .carousel-btn {
 
   body {
     overflow-x: hidden !important;
+  }
+
+  .carousel-track {
+    overflow: hidden !important;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
   }
 }
 
