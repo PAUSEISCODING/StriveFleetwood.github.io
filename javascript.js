@@ -654,18 +654,14 @@ if (isMenuPage) {
 
     const rawTiltX = g.x;
 
-    // Smooth tilt
     smoothedTiltX = smoothedTiltX + (rawTiltX - smoothedTiltX) * smoothingFactor;
 
-    // Convert tilt to a 0–1 intensity
     let intensity = Math.abs(smoothedTiltX) / 8;
     intensity = Math.min(intensity, 1);
 
-    // Stereo pan
     let panValue = Math.max(-1, Math.min(smoothedTiltX / 8, 1));
     panner.pan.value = panValue;
 
-    // Require a stronger tilt to start pouring
     if (intensity > 0.2) {
       if (!isPouring) {
         pourSound.currentTime = 0;
