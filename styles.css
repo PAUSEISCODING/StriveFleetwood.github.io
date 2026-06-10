@@ -1172,6 +1172,20 @@ body.light .carousel-btn {
   }
 }
 
+.test-circle {
+  position: fixed;
+  display: flex;
+  width: 60px;
+  height: 60px;
+  background: red;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 /* NEWS STUFF - no touchy */
 
 .social-feed {
