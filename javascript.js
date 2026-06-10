@@ -673,22 +673,38 @@ if (isMenuPage) {
     let panValue = Math.max(-1, Math.min(smoothedTiltX / 8, 1));
     panner.pan.value = panValue;
 
-    if (intensity > 0.2) {
-      if (!isPouring) {
-        pourSound.currentTime = 0;
-        pourSound.play();
-        isPouring = true;
-        console.log("Pour triggered, intensity:", intensity);
-      }
+  if (intensity > 0.2) {
+    if (!isPouring) {
+      pourSound.currentTime = 0;
+      pourSound.play();
+      isPouring = true;
+      console.log("Pour triggered, intensity:", intensity);
 
-      pourSound.volume = intensity * 0.6;
-
-    } else {
-      if (isPouring) {
-        fadeOutAudio(pourSound, 200);
-        isPouring = false;
+      // HAPTIC FEEDBACK — short rumble when pouring starts
+      if (navigator.vibrate) {
+        navigator.vibrate(30); // quick tap
       }
     }
+
+    pourSound.volume = intensity * 0.6;
+
+    // CONTINUOUS RUMBLE — gentle vibration while pouring
+    if (navigator.vibrate) {
+      navigator.vibrate([10, 40]); // 10ms buzz, 40ms pause
+    }
+
+  } else {
+    if (isPouring) {
+      fadeOutAudio(pourSound, 200);
+      isPouring = false;
+
+      // Stop vibration when pouring stops
+      if (navigator.vibrate) {
+        navigator.vibrate(0);
+      }
+    }
+  }
+
   });
 
 }
