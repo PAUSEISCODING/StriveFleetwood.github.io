@@ -1175,8 +1175,8 @@ body.light .carousel-btn {
 .test-circle {
   position: fixed;
   display: flex;
-  width: 60px;
-  height: 60px;
+  width: 75px;
+  height: 75px;
   background: red;
   border-radius: 50%;
   pointer-events: none;
