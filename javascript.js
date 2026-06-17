@@ -676,17 +676,22 @@ if (isMenuPage) {
     }
   }
 
-  pourButton.addEventListener("click", () => {
+  pourButton.addEventListener("click", async () => {
     console.log("Pour button CLICKED");
     console.log("sparkLoaded =", sparkLoaded);
+
+    // unlock audio + request motion permission
+    unlockAudio();
+    await requestMotionPermission();
 
     hidePourButton();
     tiltEnabled = true;
 
     startPouring();
 
-    schedulePourButton(); // schedule next appearance
+    schedulePourButton();
   });
+
 
   // pour sound and tilt controls
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
