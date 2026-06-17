@@ -557,6 +557,10 @@ const isMenuPage = window.location.pathname.includes("menus");
 
 if (isMenuPage) {
 
+  let lastTiltTime = 0;
+  let tiltTimeout = null;
+
+
   console.log("isMenuPage =", isMenuPage);
 
   // pour button and spark animation stuffs
@@ -795,14 +799,31 @@ if (isMenuPage) {
     let panValue = Math.max(-1, Math.min(smoothedTiltX / 8, 1));
     panner.pan.value = panValue;
 
-    // pouring is already active — tilt only adjusts intensity
+    if (intensity > 0.05) {
+      lastTiltTime = Date.now();
+    }
+
+    // auto-disable tilt after 3 seconds of no movement
+    if (Date.now() - lastTiltTime > 3000) {
+      tiltEnabled = false;
+      if (isPouring) {
+        fadeOutAudio(pourSound, 300);
+        isPouring = false;
+      }
+      return;
+    }
+
+    // tilt adjusts intensity
     pourSound.volume = Math.max(0.1, intensity * 0.6); 
     panner.pan.value = panValue;
 
-    // optional: vibration only when tilted enough
-    if (intensity > 0.2 && navigator.vibrate) {
-      navigator.vibrate([10, 40]);
+    if (navigator.vibrate) {
+      const rumbleStrength = Math.floor(intensity * 40); // 0–40ms
+      if (rumbleStrength > 2) {
+        navigator.vibrate([rumbleStrength, 20]);
+      }
     }
+
 
 
   });
