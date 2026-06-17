@@ -557,6 +557,133 @@ const isMenuPage = window.location.pathname.includes("menus");
 
 if (isMenuPage) {
 
+  console.log("isMenuPage =", isMenuPage);
+
+  // pour button and spark animation stuffs
+  const pourButton = document.getElementById("pourButton");
+  const sparkCanvas = document.getElementById("sparkCanvas");
+  pourButton.appendChild(sparkCanvas);
+  console.log("Canvas parent:", sparkCanvas.parentElement);
+  sparkCanvas.width = 600;
+  sparkCanvas.height = 600;
+
+  let tiltEnabled = false;
+
+  // png sequence frames (45 frames)
+  const sparkFrames = [];
+  for (let i = 0; i <= 44; i++) {
+    const img = new Image();
+    const padded = i.toString().padStart(2, "0");
+    img.src = `assets/animations/spark/${padded}.png`; // this is where it findeds the frames for de animtion
+    sparkFrames.push(img);
+  }
+
+  function showPourButton() {
+    pourButton.classList.add("show");
+
+    // play spark after rise animation finishes
+    setTimeout(() => {
+      playSparkAnimation();
+    }, 600);
+  }
+
+  function hidePourButton() {
+    pourButton.classList.add("disappear");
+
+    setTimeout(() => {
+      pourButton.classList.remove("show", "disappear");
+    }, 1000);
+  }
+
+  let sparkLoaded = false;
+  let sparkLoadedCount = 0;
+
+  sparkFrames.forEach((img, index) => {
+    img.onload = () => {
+      console.log("Loaded frame:", index);
+      sparkLoadedCount++;
+      if (sparkLoadedCount === sparkFrames.length) {
+        sparkLoaded = true;
+        console.log("All spark frames loaded!");
+      }
+    };
+
+    img.onerror = () => {
+      console.error("Failed to load frame:", img.src);
+    };
+  });
+
+  function playSparkAnimation() {
+
+    const buttonRect = pourButton.getBoundingClientRect();
+    const canvasRect = sparkCanvas.getBoundingClientRect();
+
+    const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+    const canvasCenterX = canvasRect.left + canvasRect.width / 2;
+
+    console.log("Button center X:", buttonCenterX);
+    console.log("Canvas center X:", canvasCenterX);
+    console.log("Difference:", canvasCenterX - buttonCenterX);
+
+
+    const ctx = sparkCanvas.getContext("2d");
+    let frame = 0;
+
+    function draw() {
+      ctx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
+
+      ctx.save();
+      ctx.translate(sparkCanvas.width / 2, sparkCanvas.height / 2);
+      ctx.drawImage(
+        sparkFrames[frame],
+        -sparkCanvas.width / 2,
+        -sparkCanvas.height / 2,
+        sparkCanvas.width,
+        sparkCanvas.height
+      );
+      ctx.restore();
+
+      frame++;
+      if (frame < sparkFrames.length) {
+        requestAnimationFrame(draw);
+      } else {
+        ctx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  function schedulePourButton() {
+    const delay = Math.random() * (4000 - 3000) + 3000; // 3-4 seconds, normally like 30 - 120 seconds but shorter for quicker testing :)
+
+    setTimeout(() => {
+      showPourButton();
+    }, delay);
+  }
+
+  schedulePourButton();
+
+  function startPouring() {
+    if (!isPouring) {
+      pourSound.currentTime = 0;
+      pourSound.play();
+      isPouring = true;
+    }
+  }
+
+  pourButton.addEventListener("click", () => {
+    console.log("Pour button CLICKED");
+    console.log("sparkLoaded =", sparkLoaded);
+
+    hidePourButton();
+    tiltEnabled = true;
+
+    startPouring();
+
+    schedulePourButton(); // schedule next appearance
+  });
+
   // pour sound and tilt controls
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
   const pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
@@ -650,12 +777,7 @@ if (isMenuPage) {
 
     const g = e.accelerationIncludingGravity;
 
-    // only allow pouring when phone is upright
-    const upright =
-      Math.abs(g.z) > Math.abs(g.x) &&
-      Math.abs(g.z) > Math.abs(g.y);
-
-    if (!upright) {
+    if (!tiltEnabled) {
       if (isPouring) {
         fadeOutAudio(pourSound, 200);
         isPouring = false;
@@ -673,37 +795,15 @@ if (isMenuPage) {
     let panValue = Math.max(-1, Math.min(smoothedTiltX / 8, 1));
     panner.pan.value = panValue;
 
-  if (intensity > 0.2) {
-    if (!isPouring) {
-      pourSound.currentTime = 0;
-      pourSound.play();
-      isPouring = true;
-      console.log("Pour triggered, intensity:", intensity);
+    // pouring is already active — tilt only adjusts intensity
+    pourSound.volume = Math.max(0.1, intensity * 0.6); 
+    panner.pan.value = panValue;
 
-      // HAPTIC FEEDBACK — short rumble when pouring starts
-      if (navigator.vibrate) {
-        navigator.vibrate(30); // quick tap
-      }
+    // optional: vibration only when tilted enough
+    if (intensity > 0.2 && navigator.vibrate) {
+      navigator.vibrate([10, 40]);
     }
 
-    pourSound.volume = intensity * 0.6;
-
-    // CONTINUOUS RUMBLE — gentle vibration while pouring
-    if (navigator.vibrate) {
-      navigator.vibrate([10, 40]); // 10ms buzz, 40ms pause
-    }
-
-  } else {
-    if (isPouring) {
-      fadeOutAudio(pourSound, 200);
-      isPouring = false;
-
-      // Stop vibration when pouring stops
-      if (navigator.vibrate) {
-        navigator.vibrate(0);
-      }
-    }
-  }
 
   });
 
