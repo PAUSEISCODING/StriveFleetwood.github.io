@@ -559,12 +559,16 @@ if (isMenuPage) {
 
   let lastTiltTime = 0;
   let tiltTimeout = null;
+  let pourDismissed = false;
 
   console.log("isMenuPage =", isMenuPage);
 
   // pour button and spark animation stuffs
   const pourButton = document.getElementById("pourButton");
   const sparkCanvas = document.getElementById("sparkCanvas");
+  const closeBtn = document.getElementById("closePour");
+  closeBtn.style.opacity = "0";
+  closeBtn.style.pointerEvents = "none";
   pourButton.appendChild(sparkCanvas);
   console.log("Canvas parent:", sparkCanvas.parentElement);
   sparkCanvas.width = 600;
@@ -575,10 +579,13 @@ if (isMenuPage) {
 
   let tiltEnabled = false;
 
-  document.getElementById("closePour").addEventListener("click", () => {
-    hidePourButton();
-    tiltEnabled = false;
-  });
+closeBtn.addEventListener("click", () => {
+  pourDismissed = true;
+  closeBtn.style.opacity = "0";
+  closeBtn.style.pointerEvents = "none";
+  hidePourButton();
+  tiltEnabled = false;
+});
 
   // png sequence frames (45 frames)
   const sparkFrames = [];
@@ -592,7 +599,10 @@ if (isMenuPage) {
   function showPourButton() {
     pourButton.classList.add("show");
 
-    // play spark after rise animation finishes
+    // show close button
+    closeBtn.style.opacity = "1";
+    closeBtn.style.pointerEvents = "auto";
+
     setTimeout(() => {
       playSparkAnimation();
     }, 600);
@@ -665,10 +675,12 @@ if (isMenuPage) {
   }
 
   function schedulePourButton() {
-    const delay = Math.random() * (4000 - 3000) + 3000; // 3-4 seconds, normally like 30 - 120 seconds but shorter for quicker testing :)
+    if (pourDismissed) return;
+
+    const delay = Math.random() * (4000 - 3000) + 3000;
 
     setTimeout(() => {
-      showPourButton();
+      if (!pourDismissed) showPourButton();
     }, delay);
   }
 
