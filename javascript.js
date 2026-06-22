@@ -775,7 +775,7 @@ if (isMenuPage) {
   });
 
   window.addEventListener("devicemotion", (e) => {
-    console.log("Raw motion:", e.accelerationIncludingGravity);
+    console.log("RAW:", e.accelerationIncludingGravity);
   });
 
   // main tilt handler
