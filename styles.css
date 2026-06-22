@@ -1284,6 +1284,19 @@ body.light .carousel-btn {
   animation: pourRise 0.6s ease-out forwards;
 }
 
+#closePour {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #0008;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
+  border: none;
+}
+
 @keyframes pourRise {
   0%   { transform: translateY(40px) scale(0.85); }
   55%  { transform: translateY(-10px) scale(1.08); }

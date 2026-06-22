@@ -560,7 +560,6 @@ if (isMenuPage) {
   let lastTiltTime = 0;
   let tiltTimeout = null;
 
-
   console.log("isMenuPage =", isMenuPage);
 
   // pour button and spark animation stuffs
@@ -571,7 +570,15 @@ if (isMenuPage) {
   sparkCanvas.width = 600;
   sparkCanvas.height = 600;
 
+  // prevent canvas from blocking UI interactions
+  sparkCanvas.style.pointerEvents = "none";
+
   let tiltEnabled = false;
+
+  document.getElementById("closePour").addEventListener("click", () => {
+    hidePourButton();
+    tiltEnabled = false;
+  });
 
   // png sequence frames (45 frames)
   const sparkFrames = [];
@@ -629,7 +636,6 @@ if (isMenuPage) {
     console.log("Canvas center X:", canvasCenterX);
     console.log("Difference:", canvasCenterX - buttonCenterX);
 
-
     const ctx = sparkCanvas.getContext("2d");
     let frame = 0;
 
@@ -685,13 +691,14 @@ if (isMenuPage) {
     await requestMotionPermission();
 
     hidePourButton();
+
     tiltEnabled = true;
+    lastTiltTime = Date.now();
 
     startPouring();
 
     schedulePourButton();
   });
-
 
   // pour sound and tilt controls
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -766,7 +773,6 @@ if (isMenuPage) {
     await requestMotionPermission();
   });
 
-  // NEW: Android requires a real touch gesture
   document.body.addEventListener("touchstart", async () => {
     unlockAudio();
     await requestMotionPermission();
@@ -781,13 +787,10 @@ if (isMenuPage) {
     }
   });
 
+  // main tilt handler
   window.addEventListener("devicemotion", (e) => {
     console.log("RAW:", e.accelerationIncludingGravity);
-  });
 
-  // main tilt handler
-
-  window.addEventListener("devicemotion", (e) => {
     if (!motionAllowed || !audioUnlocked) return;
     if (document.hidden) return;
 
@@ -815,8 +818,8 @@ if (isMenuPage) {
       lastTiltTime = Date.now();
     }
 
-    // auto-disable tilt after 3 seconds of no movement
-    if (Date.now() - lastTiltTime > 3000) {
+    // auto-disable tilt after 1.5 seconds
+    if (Date.now() - lastTiltTime > 1500) {
       tiltEnabled = false;
       if (isPouring) {
         fadeOutAudio(pourSound, 300);
@@ -826,7 +829,7 @@ if (isMenuPage) {
     }
 
     // tilt adjusts intensity
-    pourSound.volume = Math.max(0.1, intensity * 0.6); 
+    pourSound.volume = Math.min(1, intensity * 1.2); // boosted for mobile speakers since i kept having to max out my phone volume and then i'd forget i maxed it and then next time something played on my phone i'd get my ears blasted, all because the sound was tooooooo quiet by default so now it should be good :)
     panner.pan.value = panValue;
 
     if (navigator.vibrate) {
@@ -835,10 +838,6 @@ if (isMenuPage) {
         navigator.vibrate([rumbleStrength, 20]);
       }
     }
-
-
-
   });
 
 }
-
