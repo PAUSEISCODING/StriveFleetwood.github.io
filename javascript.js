@@ -766,6 +766,13 @@ if (isMenuPage) {
     await requestMotionPermission();
   });
 
+  // NEW: Android requires a real touch gesture
+  document.body.addEventListener("touchstart", async () => {
+    unlockAudio();
+    await requestMotionPermission();
+    motionAllowed = true;
+  });
+
   // Stop pouring when screen is off or tab hidden
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
