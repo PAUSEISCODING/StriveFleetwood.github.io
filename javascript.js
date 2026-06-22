@@ -723,6 +723,13 @@ if (isMenuPage) {
   let audioUnlocked = false;
   let motionAllowed = false;
 
+  // stop pouring as soon as the sound finishes
+  pourSound.addEventListener("ended", () => {
+    tiltEnabled = false;
+    isPouring = false;
+    pourSound.volume = 0;
+  });
+
   function fadeOutAudio(audio, duration = 200) {
     const startVolume = audio.volume;
     const steps = 20;
@@ -784,6 +791,7 @@ if (isMenuPage) {
     if (document.hidden) {
       fadeOutAudio(pourSound, 150);
       isPouring = false;
+      tiltEnabled = false;
     }
   });
 
@@ -811,10 +819,13 @@ if (isMenuPage) {
     let intensity = Math.abs(smoothedTiltX) / 8;
     intensity = Math.min(intensity, 1);
 
+    // soften low tilt, peak around stronger tilt
+    const easedIntensity = Math.pow(intensity, 2);
+
     let panValue = Math.max(-1, Math.min(smoothedTiltX / 8, 1));
     panner.pan.value = panValue;
 
-    if (intensity > 0.05) {
+    if (easedIntensity > 0.05) {
       lastTiltTime = Date.now();
     }
 
@@ -828,12 +839,25 @@ if (isMenuPage) {
       return;
     }
 
+    // progress-based falloff over the sound duration
+    const progress = pourSound.duration
+      ? Math.min(1, pourSound.currentTime / pourSound.duration)
+      : 0;
+    const progressFalloff = 1 - progress; // starts at 1, fades to 0
+
     // tilt adjusts intensity
-    pourSound.volume = Math.min(1, intensity * 1.2); // boosted for mobile speakers since i kept having to max out my phone volume and then i'd forget i maxed it and then next time something played on my phone i'd get my ears blasted, all because the sound was tooooooo quiet by default so now it should be good :)
+    if (easedIntensity < 0.05 || progressFalloff <= 0) {
+      pourSound.volume = 0;
+    } else {
+      pourSound.volume = Math.min(1, easedIntensity * 1.2 * progressFalloff); // boosted for mobile speakers since i kept having to max out my phone volume and then i'd forget i maxed it and then next time something played on my phone i'd get my ears blasted, all because the sound was tooooooo quiet by default so now it should be good :)
+    }
     panner.pan.value = panValue;
 
     if (navigator.vibrate) {
-      const rumbleStrength = Math.floor(intensity * 40); // 0–40ms
+      // rumble eased by tilt and faded over sound progression
+      const baseRumble = easedIntensity * 60; // base strength
+      const rumbleStrength = Math.floor(baseRumble * progressFalloff); // fade over time
+
       if (rumbleStrength > 2) {
         navigator.vibrate([rumbleStrength, 20]);
       }
@@ -841,3 +865,4 @@ if (isMenuPage) {
   });
 
 }
+
