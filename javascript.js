@@ -557,6 +557,161 @@ const isMenuPage = window.location.pathname.includes("menus");
 
 if (isMenuPage) {
 
+  let lastTiltTime = 0;
+  let tiltTimeout = null;
+  let pourDismissed = false;
+
+  console.log("isMenuPage =", isMenuPage);
+
+  // pour button and spark animation stuffs
+  const pourButton = document.getElementById("pourButton");
+  const sparkCanvas = document.getElementById("sparkCanvas");
+  const closeBtn = document.getElementById("closePour");
+  closeBtn.style.opacity = "0";
+  closeBtn.style.pointerEvents = "none";
+  pourButton.appendChild(sparkCanvas);
+  console.log("Canvas parent:", sparkCanvas.parentElement);
+  sparkCanvas.width = 600;
+  sparkCanvas.height = 600;
+
+  // prevent canvas from blocking UI interactions
+  sparkCanvas.style.pointerEvents = "none";
+
+  let tiltEnabled = false;
+
+closeBtn.addEventListener("click", () => {
+  pourDismissed = true;
+  closeBtn.style.opacity = "0";
+  closeBtn.style.pointerEvents = "none";
+  hidePourButton();
+  tiltEnabled = false;
+});
+
+  // png sequence frames (45 frames)
+  const sparkFrames = [];
+  for (let i = 0; i <= 44; i++) {
+    const img = new Image();
+    const padded = i.toString().padStart(2, "0");
+    img.src = `assets/animations/spark/${padded}.png`; // this is where it findeds the frames for de animtion
+    sparkFrames.push(img);
+  }
+
+  function showPourButton() {
+    pourButton.classList.add("show");
+
+    // show close button
+    closeBtn.style.opacity = "1";
+    closeBtn.style.pointerEvents = "auto";
+
+    setTimeout(() => {
+      playSparkAnimation();
+    }, 600);
+  }
+
+  function hidePourButton() {
+    pourButton.classList.add("disappear");
+
+    setTimeout(() => {
+      pourButton.classList.remove("show", "disappear");
+    }, 1000);
+  }
+
+  let sparkLoaded = false;
+  let sparkLoadedCount = 0;
+
+  sparkFrames.forEach((img, index) => {
+    img.onload = () => {
+      console.log("Loaded frame:", index);
+      sparkLoadedCount++;
+      if (sparkLoadedCount === sparkFrames.length) {
+        sparkLoaded = true;
+        console.log("All spark frames loaded!");
+      }
+    };
+
+    img.onerror = () => {
+      console.error("Failed to load frame:", img.src);
+    };
+  });
+
+  function playSparkAnimation() {
+
+    const buttonRect = pourButton.getBoundingClientRect();
+    const canvasRect = sparkCanvas.getBoundingClientRect();
+
+    const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+    const canvasCenterX = canvasRect.left + canvasRect.width / 2;
+
+    console.log("Button center X:", buttonCenterX);
+    console.log("Canvas center X:", canvasCenterX);
+    console.log("Difference:", canvasCenterX - buttonCenterX);
+
+    const ctx = sparkCanvas.getContext("2d");
+    let frame = 0;
+
+    function draw() {
+      ctx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
+
+      ctx.save();
+      ctx.translate(sparkCanvas.width / 2, sparkCanvas.height / 2);
+      ctx.drawImage(
+        sparkFrames[frame],
+        -sparkCanvas.width / 2,
+        -sparkCanvas.height / 2,
+        sparkCanvas.width,
+        sparkCanvas.height
+      );
+      ctx.restore();
+
+      frame++;
+      if (frame < sparkFrames.length) {
+        requestAnimationFrame(draw);
+      } else {
+        ctx.clearRect(0, 0, sparkCanvas.width, sparkCanvas.height);
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  function schedulePourButton() {
+    if (pourDismissed) return;
+
+    const delay = Math.random() * (4000 - 3000) + 3000;
+
+    setTimeout(() => {
+      if (!pourDismissed) showPourButton();
+    }, delay);
+  }
+
+  schedulePourButton();
+
+  function startPouring() {
+    if (!isPouring) {
+      pourSound.currentTime = 0;
+      pourSound.play();
+      isPouring = true;
+    }
+  }
+
+  pourButton.addEventListener("click", async () => {
+    console.log("Pour button CLICKED");
+    console.log("sparkLoaded =", sparkLoaded);
+
+    // unlock audio + request motion permission
+    unlockAudio();
+    await requestMotionPermission();
+
+    hidePourButton();
+
+    tiltEnabled = true;
+    lastTiltTime = Date.now();
+
+    startPouring();
+
+    schedulePourButton();
+  });
+
   // pour sound and tilt controls
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
   const pourSound = new Audio("assets/sounds/Coffee-Pour.mp3");
@@ -579,6 +734,13 @@ if (isMenuPage) {
   let isPouring = false;
   let audioUnlocked = false;
   let motionAllowed = false;
+
+  // stop pouring as soon as the sound finishes
+  pourSound.addEventListener("ended", () => {
+    tiltEnabled = false;
+    isPouring = false;
+    pourSound.volume = 0;
+  });
 
   function fadeOutAudio(audio, duration = 200) {
     const startVolume = audio.volume;
@@ -630,32 +792,31 @@ if (isMenuPage) {
     await requestMotionPermission();
   });
 
+  document.body.addEventListener("touchstart", async () => {
+    unlockAudio();
+    await requestMotionPermission();
+    motionAllowed = true;
+  });
+
   // Stop pouring when screen is off or tab hidden
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
       fadeOutAudio(pourSound, 150);
       isPouring = false;
+      tiltEnabled = false;
     }
   });
 
-  window.addEventListener("devicemotion", (e) => {
-    console.log("Tilt detected:", e.accelerationIncludingGravity.x);
-  });
-
   // main tilt handler
-
   window.addEventListener("devicemotion", (e) => {
+    console.log("RAW:", e.accelerationIncludingGravity);
+
     if (!motionAllowed || !audioUnlocked) return;
     if (document.hidden) return;
 
     const g = e.accelerationIncludingGravity;
 
-    // only allow pouring when phone is upright
-    const upright =
-      Math.abs(g.z) > Math.abs(g.x) &&
-      Math.abs(g.z) > Math.abs(g.y);
-
-    if (!upright) {
+    if (!tiltEnabled) {
       if (isPouring) {
         fadeOutAudio(pourSound, 200);
         isPouring = false;
@@ -670,41 +831,49 @@ if (isMenuPage) {
     let intensity = Math.abs(smoothedTiltX) / 8;
     intensity = Math.min(intensity, 1);
 
+    // soften low tilt, peak around stronger tilt
+    const easedIntensity = Math.pow(intensity, 2);
+
     let panValue = Math.max(-1, Math.min(smoothedTiltX / 8, 1));
     panner.pan.value = panValue;
 
-  if (intensity > 0.2) {
-    if (!isPouring) {
-      pourSound.currentTime = 0;
-      pourSound.play();
-      isPouring = true;
-      console.log("Pour triggered, intensity:", intensity);
-
-      // HAPTIC FEEDBACK — short rumble when pouring starts
-      if (navigator.vibrate) {
-        navigator.vibrate(30); // quick tap
-      }
+    if (easedIntensity > 0.05) {
+      lastTiltTime = Date.now();
     }
 
-    pourSound.volume = intensity * 0.6;
+    // auto-disable tilt after 1.5 seconds
+    if (Date.now() - lastTiltTime > 1500) {
+      tiltEnabled = false;
+      if (isPouring) {
+        fadeOutAudio(pourSound, 300);
+        isPouring = false;
+      }
+      return;
+    }
 
-    // CONTINUOUS RUMBLE — gentle vibration while pouring
+    // progress-based falloff over the sound duration
+    const progress = pourSound.duration
+      ? Math.min(1, pourSound.currentTime / pourSound.duration)
+      : 0;
+    const progressFalloff = 1 - progress; // starts at 1, fades to 0
+
+    // tilt adjusts intensity
+    if (easedIntensity < 0.05 || progressFalloff <= 0) {
+      pourSound.volume = 0;
+    } else {
+      pourSound.volume = Math.min(1, easedIntensity * 1.2 * progressFalloff); // boosted for mobile speakers since i kept having to max out my phone volume and then i'd forget i maxed it and then next time something played on my phone i'd get my ears blasted, all because the sound was tooooooo quiet by default so now it should be good :)
+    }
+    panner.pan.value = panValue;
+
     if (navigator.vibrate) {
-      navigator.vibrate([10, 40]); // 10ms buzz, 40ms pause
-    }
+      // rumble eased by tilt and faded over sound progression
+      const baseRumble = easedIntensity * 60; // base strength
+      const rumbleStrength = Math.floor(baseRumble * progressFalloff); // fade over time
 
-  } else {
-    if (isPouring) {
-      fadeOutAudio(pourSound, 200);
-      isPouring = false;
-
-      // Stop vibration when pouring stops
-      if (navigator.vibrate) {
-        navigator.vibrate(0);
+      if (rumbleStrength > 2) {
+        navigator.vibrate([rumbleStrength, 20]);
       }
     }
-  }
-
   });
 
 }
