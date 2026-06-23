@@ -1217,8 +1217,8 @@ body.light .carousel-btn {
 }
 
 .light {
-  --button-bg: #000000;
-  --icon-color: #fff;
+  --button-bg: #ffffff;
+  --icon-color: #000000;
 }
 
 #pourButtonWrapper {
@@ -1292,13 +1292,13 @@ body.light .carousel-btn {
   top: 80%;
   left: 41.5%;
   transform: translate(-50%, -50%);
-  pointer-events: none; /* wrapper ignores touches */
+  pointer-events: none;
 }
 
 #closePour {
   position: absolute;
-  top: calc(80% + 50px); /* adjust vertically */
-  left: calc(41.5% + 140px); /* adjust horizontally */
+  top: calc(80% + 50px);
+  left: calc(41.5% + 140px);
   transform: translateY(-50%);
   background: rgba(0, 0, 0, 0.533);
   color: white;
@@ -1312,7 +1312,7 @@ body.light .carousel-btn {
   justify-content: center;
   pointer-events: auto;
   z-index: 10;
-  opacity: 0;              /* hidden by default */
+  opacity: 0;
   transition: opacity 0.3s ease;
 }
 
