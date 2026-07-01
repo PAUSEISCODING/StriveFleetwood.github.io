@@ -1,17 +1,19 @@
 const text = document.querySelector(".scroll-text");
 
-window.addEventListener("scroll", () => {
-  let y = window.scrollY;
-  let move = Math.min(y * 0.5, 150);
-  text.style.transform = "translateY(-" + move + "px)";
-});
+if (text) {
+  window.addEventListener("scroll", () => {
+    let y = window.scrollY;
+    let move = Math.min(y * 0.5, 150);
+    text.style.transform = "translateY(-" + move + "px)";
+  });
+}
 
-// color mode toggle
+// colour mode toggle
 
 const btn = document.getElementById("modeToggle");
 let isDarkMode = document.body.classList.contains("dark");
 
-function setColorMode(darkMode) {
+function setColourMode(darkMode) {
   isDarkMode = darkMode;
   document.body.classList.toggle("dark", darkMode);
   document.body.classList.toggle("light", !darkMode);
@@ -26,33 +28,35 @@ function setColorMode(darkMode) {
     el.classList.toggle("light", !darkMode);
   });
 
-  localStorage.setItem("colorMode", darkMode ? "dark" : "light");
+  localStorage.setItem("colourMode", darkMode ? "dark" : "light");
 }
 
-const savedMode = localStorage.getItem("colorMode");
+const savedMode = localStorage.getItem("colourMode");
 if (savedMode === "dark" || savedMode === "light") {
   document.body.classList.add("no-transition");
-  setColorMode(savedMode === "dark");
+  setColourMode(savedMode === "dark");
   window.requestAnimationFrame(() => {
     document.body.classList.remove("no-transition");
   });
 }
 
-btn.addEventListener("click", () => {
-  setColorMode(!isDarkMode);
-});
+if (btn) {
+  btn.addEventListener("click", () => {
+    setColourMode(!isDarkMode);
+  });
+}
 
 // burger menu toggle
 
 const burger = document.getElementById("burger");
 const nav = document.getElementById("navLinks");
 
-burger.addEventListener("click", () => {
-  burger.classList.toggle("active");
-  nav.classList.toggle("active");
-});
-
-
+if (burger && nav) {
+  burger.addEventListener("click", () => {
+    burger.classList.toggle("active");
+    nav.classList.toggle("active");
+  });
+}
 
 const projectFilter = document.getElementById("projectFilter");
 const projectCards = document.querySelectorAll(".project-card");
@@ -455,9 +459,10 @@ if (carousel && cards.length > 0) {
     });
   });
 
-  const leftBtn = document.querySelector('.left-btn');
-  const rightBtn = document.querySelector('.right-btn');
+const leftBtn = document.querySelector('.left-btn');
+const rightBtn = document.querySelector('.right-btn');
 
+if (leftBtn) {
   leftBtn.addEventListener('click', () => {
     enterActiveMode();
     rotateWithClose(() => {
@@ -465,7 +470,9 @@ if (carousel && cards.length > 0) {
       setTimeout(() => revealCard(getFrontCard()), 350);
     });
   });
+}
 
+if (rightBtn) {
   rightBtn.addEventListener('click', () => {
     enterActiveMode();
     rotateWithClose(() => {
@@ -473,6 +480,7 @@ if (carousel && cards.length > 0) {
       setTimeout(() => revealCard(getFrontCard()), 350);
     });
   });
+}
 
   let mode = "idle";
   let idleLoopTimeout = null;
@@ -809,7 +817,6 @@ closeBtn.addEventListener("click", () => {
 
   // main tilt handler
   window.addEventListener("devicemotion", (e) => {
-    console.log("RAW:", e.accelerationIncludingGravity);
 
     if (!motionAllowed || !audioUnlocked) return;
     if (document.hidden) return;
@@ -878,3 +885,354 @@ closeBtn.addEventListener("click", () => {
 
 }
 
+// mobile carousel :)
+if (isMenuPage) {
+
+  const useOriginalConcept = true; // used to switch version of the mobile carousel
+  const carouselA = document.querySelector(".mobile-carousel");
+  const carouselB = document.querySelector(".mobile-carousel-b");
+
+  if (useOriginalConcept) {
+    if (carouselA) carouselA.classList.add("hide-carousel");
+    if (carouselB) carouselB.classList.remove("hide-carousel");
+
+    const versionBExists = document.querySelector(".version-b");
+    if (!versionBExists) {
+        console.warn("Version B not found — skipping setup.");
+    } else {
+
+        // SELECT ELEMENTS
+        const leftCardB = document.querySelector(".mobile-image-left-b");
+        const rightCardB = document.querySelector(".mobile-image-right-b");
+        const textPanelB = document.querySelector(".mobile-text-panel-b");
+        const titleElB = document.querySelector(".mobile-title-b");
+        const descElB = document.querySelector(".mobile-desc-b");
+        const carouselElB = document.querySelector(".mobile-carousel-b");
+        
+        function debugCards() {
+          console.log("---- DEBUG ----");
+
+          console.log("LEFT:");
+          console.log("  offsetWidth:", leftCardB.offsetWidth);
+          console.log("  computed width:", getComputedStyle(leftCardB).width);
+          console.log("  position:", getComputedStyle(leftCardB).position);
+          console.log("  display:", getComputedStyle(leftCardB).display);
+
+          console.log("RIGHT:");
+          console.log("  offsetWidth:", rightCardB.offsetWidth);
+          console.log("  computed width:", getComputedStyle(rightCardB).width);
+          console.log("  position:", getComputedStyle(rightCardB).position);
+          console.log("  display:", getComputedStyle(rightCardB).display);
+
+          console.log("CONTAINER:");
+          console.log("  display:", getComputedStyle(carouselElB).display);
+          console.log("  flex-direction:", getComputedStyle(carouselElB).flexDirection);
+        }
+
+        setInterval(debugCards, 4500);
+
+
+        if (!leftCardB || !rightCardB || !textPanelB) {
+            console.warn("Version B elements missing — skipping.");
+        } else {
+
+            const productsB = [
+                {
+                    image: "assets/BiscoffCupcakePortrait.JPG",
+                    title: "Biscoff Cupcake",
+                    description: "Soft sponge with Biscoff buttercream and a Biscoff biscuit on top."
+                },
+                {
+                    image: "assets/BrowniesLandscape.JPG",
+                    title: "Chocolate Brownie",
+                    description: "Rich, fudgy, chocolate brownie ."
+                },
+                {
+                    image: "assets/Cakes.JPG",
+                    title: "Topped Cupcakes",
+                    description: "Spongey cupcakes with delicious toppings and fluffy cream."
+                },
+                {
+                    image: "assets/MilkybarLandscape.JPG",
+                    title: "Milkybar Traybake",
+                    description: "White chocolate traybake with a crunchy base."
+                }
+            ];
+
+            let currentIndexB = 0;
+            let nextIndexB = 1;
+            let panelOnLeft = true;
+            let animatingB = false;
+            let firstFlip = true;
+            let firstSwapFix = true;
+            const textInnerB = textPanelB.querySelector(".text-inner");
+            const firstFlipVisibleIndex = panelOnLeft ? nextIndexB : currentIndexB;
+
+
+            function applyImagesB() {
+                leftCardB.style.backgroundImage = `url(${productsB[currentIndexB].image})`;
+                rightCardB.style.backgroundImage = `url(${productsB[nextIndexB].image})`;
+            }
+
+            function applyTextB() {
+                const visibleIndex = panelOnLeft ? nextIndexB : currentIndexB;
+                titleElB.textContent = productsB[visibleIndex].title;
+                descElB.textContent = productsB[visibleIndex].description;
+            }
+
+            // Initial state
+            applyImagesB();
+            applyTextB();
+            textPanelB.classList.add("left");
+
+            function goNextB() {
+              if (animatingB) return;
+              animatingB = true;
+
+              console.log("FLIP STARTED — panelOnLeft:", panelOnLeft);
+
+              // Start sliding
+              textPanelB.classList.add(panelOnLeft ? "slide-right" : "slide-left");
+
+              //  Begin fading out
+              textInnerB.classList.remove("fading-in");
+              textInnerB.classList.add("fading-out");
+
+              // MIDPOINT — swap ONLY the hidden image
+              setTimeout(() => {
+                console.log("MIDPOINT — panelOnLeft BEFORE flip:", panelOnLeft);
+                console.log("currentIndexB BEFORE:", currentIndexB, productsB[currentIndexB].title);
+                console.log("nextIndexB BEFORE:", nextIndexB, productsB[nextIndexB].title);
+
+                // FIRST-SWAP FIX
+                if (firstSwapFix) {
+                  console.log("FIRST SWAP FIX FIRING");
+
+                  const skipIndex = (nextIndexB + 1) % productsB.length;
+
+                  // Swap right card visually
+                  rightCardB.style.backgroundImage = `url(${productsB[skipIndex].image})`;
+
+                  // Consume queue
+                  currentIndexB = skipIndex;
+                  nextIndexB = (skipIndex + 1) % productsB.length;
+
+                  // Flip panel side
+                  panelOnLeft = !panelOnLeft;
+
+                  // FIRST FLIP: visible card becomes the one AFTER the skipped card
+                  const visibleIndex = (nextIndexB + 1) % productsB.length;
+
+                  titleElB.textContent = productsB[visibleIndex].title;
+                  descElB.textContent = productsB[visibleIndex].description;
+
+                  textInnerB.classList.remove("fading-out");
+                  textInnerB.classList.add("fading-in");
+
+                  firstSwapFix = false;
+                  return;
+                }
+
+                // Normal behaviour for all subsequent flips:
+
+                // Advance the product index
+                currentIndexB = nextIndexB;
+                nextIndexB = (nextIndexB + 1) % productsB.length;
+
+                console.log("currentIndexB AFTER:", currentIndexB, productsB[currentIndexB].title);
+                console.log("nextIndexB AFTER:", nextIndexB, productsB[nextIndexB].title);
+
+                // Flip panel side
+                panelOnLeft = !panelOnLeft;
+                console.log("panelOnLeft AFTER flip:", panelOnLeft);
+
+                // Determine hidden card
+                const hidden = panelOnLeft ? "LEFT" : "RIGHT";
+                console.log("Hidden card should be:", hidden);
+
+                console.log("NORMAL SWAP FIRING");
+                if (panelOnLeft) {
+                  console.log("Swapping LEFT card to:", productsB[currentIndexB].title);
+                  leftCardB.style.backgroundImage = `url(${productsB[currentIndexB].image})`;
+                } else {
+                  console.log("Swapping RIGHT card to:", productsB[currentIndexB].title);
+                  rightCardB.style.backgroundImage = `url(${productsB[currentIndexB].image})`;
+                }
+
+                // FIRST FLIP: visible card is ALWAYS the current card
+                const visibleIndexII = currentIndexB;
+
+                titleElB.textContent = productsB[visibleIndexII].title;
+                descElB.textContent = productsB[visibleIndexII].description;
+  
+                // Determine which card is actually visible
+                const visibleCardEl = panelOnLeft ? rightCardB : leftCardB;
+                const bg = visibleCardEl.style.backgroundImage;
+                const visibleIndex = productsB.findIndex(p => bg.includes(p.image));
+
+                // Swap text to the ACTUAL visible card
+                if (visibleIndex !== -1) {
+                  titleElB.textContent = productsB[visibleIndex].title;
+                  descElB.textContent = productsB[visibleIndex].description;
+                }
+
+                // Begin fading in
+                textInnerB.classList.remove("fading-out");
+                textInnerB.classList.add("fading-in");
+
+
+                console.log("LEFT CARD BG NOW:", leftCardB.style.backgroundImage);
+                console.log("RIGHT CARD BG NOW:", rightCardB.style.backgroundImage);
+              }, 450);
+
+              // ENDPOINT — finalize panel position
+              setTimeout(() => {
+
+                textPanelB.classList.remove("slide-left", "slide-right");
+                textPanelB.classList.remove("left", "right");
+                textPanelB.classList.add(panelOnLeft ? "left" : "right");
+
+                animatingB = false;
+
+              }, 600);
+
+
+            }
+
+            let timerB;
+            requestAnimationFrame(() => {
+                timerB = setInterval(goNextB, 5000);
+            });
+
+            carouselElB.addEventListener("click", () => {
+                clearInterval(timerB);
+                goNextB();
+                timerB = setInterval(goNextB, 5000);
+            });
+        }
+    }
+    
+  } else {
+    if (carouselA) carouselA.style.display = "block";
+    if (carouselB) carouselB.style.display = "none";
+
+    const versionAExists = document.querySelector(".version-a");
+    if (!versionAExists) {
+        console.warn("Version A not found — skipping setup.");
+    } else {
+      const products = [
+        {
+          image: "assets/BiscoffCupcakePortrait.JPG",
+          title: "Biscoff Cupcake",
+          description: "Soft sponge with Biscoff buttercream and a Biscoff biscuit on top."
+        },
+        {
+          image: "assets/BrowniesLandscape.JPG",
+          title: "Chocolate Brownie",
+          description: "Rich, fudgy brownie baked fresh in-house."
+        },
+        {
+          image: "assets/Cakes.JPG",
+          title: "Layered Cake Slice",
+          description: "Moist sponge with creamy frosting and seasonal toppings."
+        },
+        {
+          image: "assets/MilkybarLandscape.JPG",
+          title: "Milkybar Traybake",
+          description: "White chocolate traybake with a crunchy base."
+        }
+      ];
+
+      // NEW: match your HTML
+      const leftCard = document.querySelector(".card-left");
+      const rightCard = document.querySelector(".card-right");
+
+      const textPanel = document.querySelector(".mobile-text-panel");
+      const titleEl = document.querySelector(".mobile-title");
+      const descEl = document.querySelector(".mobile-desc");
+
+      if (!leftCard || !rightCard || !textPanel) {
+          console.warn("Mobile carousel elements missing — skipping carousel setup.");
+      }
+
+      let presentIndex = 0;
+      let futureIndex = 1;
+      let panelOnLeft = true;
+      let isAnimating = false;
+
+      function applyProductToText(index) {
+        const p = products[index];
+        titleEl.textContent = p.title;
+        descEl.textContent = p.description;
+      }
+
+      // NEW: apply backgrounds to the two cards
+      function applyProductToImages(presentIdx, futureIdx) {
+        leftCard.style.backgroundImage = `url(${products[presentIdx].image})`;
+        rightCard.style.backgroundImage = `url(${products[futureIdx].image})`;
+      }
+
+      function getNextIndex(idx) {
+        return (idx + 1) % products.length;
+      }
+
+      // Initial setup
+      applyProductToImages(presentIndex, futureIndex);
+      applyProductToText(presentIndex);
+      textPanel.classList.add("left");
+
+      function goToNextProduct() {
+        if (isAnimating) return;
+        isAnimating = true;
+
+        const slideOutClass = panelOnLeft ? "slide-right" : "slide-left";
+        const slideInSideClass = panelOnLeft ? "right" : "left";
+
+        // Prepare future image
+        futureIndex = getNextIndex(presentIndex);
+        rightCard.style.backgroundImage = `url(${products[futureIndex].image})`;
+
+        // Start slide + fade out
+        textPanel.classList.add("fading-out");
+        textPanel.classList.add(slideOutClass);
+
+        // Midpoint swap
+        setTimeout(() => {
+          applyProductToText(futureIndex);
+          textPanel.classList.remove("fading-out");
+          textPanel.classList.add("fading-in");
+
+          textPanel.classList.remove("left", "right", "slide-left", "slide-right");
+          textPanel.classList.add(slideInSideClass);
+
+          void textPanel.offsetWidth;
+
+          textPanel.classList.remove("fading-in");
+        }, 300);
+
+        // End of cycle
+        setTimeout(() => {
+          presentIndex = futureIndex;
+          applyProductToImages(presentIndex, getNextIndex(presentIndex));
+
+          panelOnLeft = !panelOnLeft;
+
+          textPanel.classList.remove("slide-left", "slide-right", "fading-out", "fading-in");
+
+          isAnimating = false;
+        }, 650);
+      }
+
+      let mobileCarouselTimer = setInterval(goToNextProduct, 5000);
+
+      const mobileCarouselEl = document.querySelector(".mobile-carousel");
+      if (mobileCarouselEl) {
+        mobileCarouselEl.addEventListener("click", () => {
+          clearInterval(mobileCarouselTimer);
+          goToNextProduct();
+          mobileCarouselTimer = setInterval(goToNextProduct, 5000);
+        });
+      }
+    }
+  }
+}

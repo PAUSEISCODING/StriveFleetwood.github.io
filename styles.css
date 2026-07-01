@@ -1440,3 +1440,213 @@ body.light .carousel-btn {
     transform: translateY(0);
   }
 }
+
+/* Hide mobile version by default, show on small screens */
+.mobile-featured-carousel {
+  display: none;
+}
+
+@media (max-width: 750px) {
+  .featured-carousel-wrapper {  /* your existing desktop carousel wrapper */
+    display: none;
+  }
+
+  .mobile-featured-carousel {
+    display: block;
+    max-width: 100%;
+    padding: 1.5rem 1rem 3rem;
+  }
+}
+
+/* Layout */
+
+.mobile-featured-carousel.version-a .mobile-carousel {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #000;
+}
+
+.mobile-featured-carousel.version-a .mobile-cards {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  width: 200%; /* two cards side by side */
+  height: 100%;
+}
+
+.mobile-featured-carousel.version-a .mobile-card {
+  width: 50%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Text panel */
+
+.mobile-featured-carousel.version-a .mobile-text-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 55%;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transform: translateX(0);
+  opacity: 1;
+  transition:
+    transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1),
+    opacity 0.3s ease;
+}
+
+/* Start on left by default */
+.mobile-featured-carousel.version-a .mobile-text-panel.left {
+  left: 0;
+}
+
+.mobile-featured-carousel.version-a .mobile-text-panel.right {
+  right: 0;
+}
+
+/* Sliding states */
+
+.mobile-featured-carousel.version-a .mobile-text-panel.slide-left {
+  transform: translateX(-110%);
+}
+
+.mobile-featured-carousel.version-a .mobile-text-panel.slide-right {
+  transform: translateX(110%);
+}
+
+/* Text fade helpers */
+
+.mobile-featured-carousel.version-a .mobile-text-panel.fading-out {
+  opacity: 0;
+}
+
+.mobile-featured-carousel.version-a .mobile-text-panel.fading-in {
+  opacity: 1;
+}
+
+.mobile-featured-carousel.version-a .mobile-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.mobile-featured-carousel.version-a .mobile-desc {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #ddd;
+}
+
+.mobile-featured-carousel.version-a .mobile-carousel[style*="display: none"] .mobile-cards {
+  display: none !important;
+}
+
+/* version B beucase i'm indecisive*/
+
+.mobile-carousel-b {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 12px;
+  background: none !important;
+  display: flex;
+  z-index: 10;
+}
+
+/* Image halves */
+.mobile-image-left-b,
+.mobile-image-right-b {
+  flex: 0 0 50% !important;
+  width: 50% !important; 
+  min-width: 50% !important;
+  max-width: 50% !important;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0s;
+}
+
+/* Version B text panel — fully isolated */
+.mobile-text-panel-b {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  height: 100%;
+  background: #000;
+  color: #fff;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: 1;
+
+  left: 0;
+  transform: translateX(0%);
+  transition: transform 0.45s ease;
+
+  z-index: 10;
+  pointer-events: none;
+}
+
+body.light .mobile-text-panel-b {
+  background: #fff;
+  color: #000;
+}
+
+.text-inner {
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+
+.text-inner.fading-out {
+  opacity: 0;
+}
+
+.text-inner.fading-in {
+  opacity: 1;
+}
+
+/* Panel positioned on the left */
+.mobile-text-panel-b.left {
+  transform: translateX(0%) !important;
+  transition: transform 0.45s ease !important;
+}
+
+/* Panel positioned on the right */
+.mobile-text-panel-b.right {
+  transform: translateX(100%) !important;
+  transition: transform 0.45s ease !important;
+}
+
+/* Slide animations */
+.mobile-text-panel-b.slide-left {
+  transform: translateX(0%) !important;
+}
+
+.mobile-text-panel-b.slide-right {
+  transform: translateX(100%) !important;
+}
+
+.mobile-featured-carousel.version-b .mobile-cards,
+.mobile-featured-carousel.version-b .mobile-card,
+.mobile-featured-carousel.version-b .mobile-text-panel,
+.mobile-featured-carousel.version-b .mobile-carousel{
+  display: none !important;
+}
+
+.hide-carousel {
+  display: none !important;
+}
