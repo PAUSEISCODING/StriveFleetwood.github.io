@@ -1314,6 +1314,52 @@ body.light .carousel-btn {
   z-index: 10;
   opacity: 0;
   transition: opacity 0.3s ease;
+  transform-origin: center;
+}
+
+#closePour.start-inside {
+  top: calc(80% + 50px) !important;
+  left: 41.5%;
+  transform: translate(-50%, -50%) scale(0.7);
+  opacity: 0;
+}
+
+@keyframes closeSlideOut {
+  0% {
+    top: 80%;
+    left: 41.5%;
+    transform: translate(-50%, -50%) scale(0.7);
+    opacity: 0;
+  }
+  100% {
+    top: calc(80% + 50px);
+    left: calc(41.5% + 140px);
+    transform: translateY(-50%) scale(0.7);
+    opacity: 1;
+  }
+}
+
+@keyframes closeButtonBoop {
+  0% {
+    transform: translateY(-50%) scale(1);
+  }
+  40% {
+    transform: translateY(-50%) scale(0.75);
+  }
+  70% {
+    transform: translateY(-50%) scale(1.08);
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+#closePour.boop {
+  animation: closeButtonBoop 0.22s cubic-bezier(.25,1.4,.4,1);
+}
+
+#closePour.pop {
+  animation: closeSlideOut 0.45s cubic-bezier(.25,1.4,.4,1) forwards;
 }
 
 @keyframes pourRise {

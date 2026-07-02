@@ -587,13 +587,17 @@ if (isMenuPage) {
 
   let tiltEnabled = false;
 
-closeBtn.addEventListener("click", () => {
-  pourDismissed = true;
-  closeBtn.style.opacity = "0";
-  closeBtn.style.pointerEvents = "none";
-  hidePourButton();
-  tiltEnabled = false;
-});
+  closeBtn.addEventListener("click", () => {
+    // bouncy shrink
+    closeBtn.classList.add("boop");
+    setTimeout(() => closeBtn.classList.remove("boop"), 220);
+
+    pourDismissed = true;
+    closeBtn.style.opacity = "0";
+    closeBtn.style.pointerEvents = "none";
+    hidePourButton();
+    tiltEnabled = false;
+  });
 
   // png sequence frames (45 frames)
   const sparkFrames = [];
@@ -607,9 +611,15 @@ closeBtn.addEventListener("click", () => {
   function showPourButton() {
     pourButton.classList.add("show");
 
-    // show close button
-    closeBtn.style.opacity = "1";
+    // prepare close button for slide animation
+    closeBtn.classList.add("start-inside");
+    closeBtn.classList.remove("pop"); // reset if needed
     closeBtn.style.pointerEvents = "auto";
+
+    // wait until pour button finishes rising
+    setTimeout(() => {
+      closeBtn.classList.add("pop");
+    }, 1600); // <-- perfect timing
 
     setTimeout(() => {
       playSparkAnimation();
@@ -618,6 +628,10 @@ closeBtn.addEventListener("click", () => {
 
   function hidePourButton() {
     pourButton.classList.add("disappear");
+
+    closeBtn.classList.remove("pop", "start-inside");
+    closeBtn.style.opacity = "0";
+    closeBtn.style.pointerEvents = "none";
 
     setTimeout(() => {
       pourButton.classList.remove("show", "disappear");
@@ -888,7 +902,7 @@ closeBtn.addEventListener("click", () => {
 // mobile carousel :)
 if (isMenuPage) {
 
-  const useOriginalConcept = true; // used to switch version of the mobile carousel
+  const useOriginalConcept = true; // used to switch version of the mobile carousel False is Version A, True is Version B
   const carouselA = document.querySelector(".mobile-carousel");
   const carouselB = document.querySelector(".mobile-carousel-b");
 
@@ -901,7 +915,6 @@ if (isMenuPage) {
         console.warn("Version B not found — skipping setup.");
     } else {
 
-        // SELECT ELEMENTS
         const leftCardB = document.querySelector(".mobile-image-left-b");
         const rightCardB = document.querySelector(".mobile-image-right-b");
         const textPanelB = document.querySelector(".mobile-text-panel-b");
@@ -991,36 +1004,31 @@ if (isMenuPage) {
 
               console.log("FLIP STARTED — panelOnLeft:", panelOnLeft);
 
-              // Start sliding
+
               textPanelB.classList.add(panelOnLeft ? "slide-right" : "slide-left");
 
-              //  Begin fading out
               textInnerB.classList.remove("fading-in");
               textInnerB.classList.add("fading-out");
 
-              // MIDPOINT — swap ONLY the hidden image
+              // MIDPOINT
               setTimeout(() => {
                 console.log("MIDPOINT — panelOnLeft BEFORE flip:", panelOnLeft);
                 console.log("currentIndexB BEFORE:", currentIndexB, productsB[currentIndexB].title);
                 console.log("nextIndexB BEFORE:", nextIndexB, productsB[nextIndexB].title);
 
-                // FIRST-SWAP FIX
                 if (firstSwapFix) {
                   console.log("FIRST SWAP FIX FIRING");
 
                   const skipIndex = (nextIndexB + 1) % productsB.length;
 
-                  // Swap right card visually
                   rightCardB.style.backgroundImage = `url(${productsB[skipIndex].image})`;
 
-                  // Consume queue
+                  // advance the queue
                   currentIndexB = skipIndex;
                   nextIndexB = (skipIndex + 1) % productsB.length;
 
-                  // Flip panel side
                   panelOnLeft = !panelOnLeft;
 
-                  // FIRST FLIP: visible card becomes the one AFTER the skipped card
                   const visibleIndex = (nextIndexB + 1) % productsB.length;
 
                   titleElB.textContent = productsB[visibleIndex].title;
@@ -1032,8 +1040,6 @@ if (isMenuPage) {
                   firstSwapFix = false;
                   return;
                 }
-
-                // Normal behaviour for all subsequent flips:
 
                 // Advance the product index
                 currentIndexB = nextIndexB;
@@ -1059,7 +1065,6 @@ if (isMenuPage) {
                   rightCardB.style.backgroundImage = `url(${productsB[currentIndexB].image})`;
                 }
 
-                // FIRST FLIP: visible card is ALWAYS the current card
                 const visibleIndexII = currentIndexB;
 
                 titleElB.textContent = productsB[visibleIndexII].title;
@@ -1070,13 +1075,12 @@ if (isMenuPage) {
                 const bg = visibleCardEl.style.backgroundImage;
                 const visibleIndex = productsB.findIndex(p => bg.includes(p.image));
 
-                // Swap text to the ACTUAL visible card
+                // Swap text to the visible card
                 if (visibleIndex !== -1) {
                   titleElB.textContent = productsB[visibleIndex].title;
                   descElB.textContent = productsB[visibleIndex].description;
                 }
 
-                // Begin fading in
                 textInnerB.classList.remove("fading-out");
                 textInnerB.classList.add("fading-in");
 
@@ -1085,7 +1089,7 @@ if (isMenuPage) {
                 console.log("RIGHT CARD BG NOW:", rightCardB.style.backgroundImage);
               }, 450);
 
-              // ENDPOINT — finalize panel position
+              // ENDPOINT
               setTimeout(() => {
 
                 textPanelB.classList.remove("slide-left", "slide-right");
@@ -1143,7 +1147,6 @@ if (isMenuPage) {
         }
       ];
 
-      // NEW: match your HTML
       const leftCard = document.querySelector(".card-left");
       const rightCard = document.querySelector(".card-right");
 
@@ -1166,7 +1169,7 @@ if (isMenuPage) {
         descEl.textContent = p.description;
       }
 
-      // NEW: apply backgrounds to the two cards
+      // apply backgrounds to the two cards
       function applyProductToImages(presentIdx, futureIdx) {
         leftCard.style.backgroundImage = `url(${products[presentIdx].image})`;
         rightCard.style.backgroundImage = `url(${products[futureIdx].image})`;
@@ -1192,11 +1195,10 @@ if (isMenuPage) {
         futureIndex = getNextIndex(presentIndex);
         rightCard.style.backgroundImage = `url(${products[futureIndex].image})`;
 
-        // Start slide + fade out
         textPanel.classList.add("fading-out");
         textPanel.classList.add(slideOutClass);
 
-        // Midpoint swap
+        // MIDPOINT
         setTimeout(() => {
           applyProductToText(futureIndex);
           textPanel.classList.remove("fading-out");
@@ -1210,7 +1212,7 @@ if (isMenuPage) {
           textPanel.classList.remove("fading-in");
         }, 300);
 
-        // End of cycle
+        // ENDPOINT
         setTimeout(() => {
           presentIndex = futureIndex;
           applyProductToImages(presentIndex, getNextIndex(presentIndex));
