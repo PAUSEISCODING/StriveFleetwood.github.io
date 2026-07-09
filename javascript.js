@@ -586,16 +586,26 @@ if (isMenuPage) {
   sparkCanvas.style.pointerEvents = "none";
 
   let tiltEnabled = false;
+  let currentFill = 0;
+  let lastTime = performance.now();
 
   closeBtn.addEventListener("click", () => {
-    // bouncy shrink
     closeBtn.classList.add("boop");
-    setTimeout(() => closeBtn.classList.remove("boop"), 220);
+    setTimeout(() => closeBtn.classList.remove("boop"), 300);
 
     pourDismissed = true;
+
+    // remove movement-only expand
+    pourButton.classList.remove("expand");
+    closeBtn.classList.remove("expand");
+
+    // hide close button
     closeBtn.style.opacity = "0";
     closeBtn.style.pointerEvents = "none";
+
+    // vanish pour button
     hidePourButton();
+
     tiltEnabled = false;
   });
 
@@ -613,13 +623,13 @@ if (isMenuPage) {
 
     // prepare close button for slide animation
     closeBtn.classList.add("start-inside");
-    closeBtn.classList.remove("pop"); // reset if needed
+    closeBtn.classList.remove("pop");
     closeBtn.style.pointerEvents = "auto";
 
-    // wait until pour button finishes rising
+    // Delay before close button appears
     setTimeout(() => {
       closeBtn.classList.add("pop");
-    }, 1600); // <-- perfect timing
+    }, 1600); // <-- 1.6 seconds
 
     setTimeout(() => {
       playSparkAnimation();
@@ -718,21 +728,33 @@ if (isMenuPage) {
 
   pourButton.addEventListener("click", async () => {
     console.log("Pour button CLICKED");
-    console.log("sparkLoaded =", sparkLoaded);
 
-    // unlock audio + request motion permission
+    closeBtn.classList.remove("start-inside", "pop");
+    closeBtn.style.opacity = "1";
+    closeBtn.style.pointerEvents = "auto";
+    closeBtn.classList.add("expand");
+
+    pourButton.classList.add("expand");
+    document.getElementById("pourContainer").style.transform =
+      "translate(-50%, -50%) scale(1)";
+
+    setFillLevel(0); // reset fill
+    currentFill = 0;
+    lastTime = performance.now();
+
+    // audio + tilt stuff stays the same
     unlockAudio();
     await requestMotionPermission();
-
-    hidePourButton();
-
     tiltEnabled = true;
     lastTiltTime = Date.now();
-
     startPouring();
-
-    schedulePourButton();
   });
+
+function setFillLevel(level) {
+  const fill = document.getElementById("liquidFill");
+  const clamped = Math.max(0, Math.min(level, 100));
+  fill.style.height = clamped + "%";
+}
 
   // pour sound and tilt controls
   const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -858,6 +880,40 @@ if (isMenuPage) {
     let panValue = Math.max(-1, Math.min(smoothedTiltX / 8, 1));
     panner.pan.value = panValue;
 
+    if (tiltEnabled) {
+
+      const now = performance.now();
+      const deltaTime = (now - lastTime) / 1000; // seconds
+      lastTime = now;
+
+      const tiltAmount = Math.abs(smoothedTiltX);
+
+      const POUR_THRESHOLD = 2.5; // minimum tilt needed to pour
+
+      if (tiltAmount > POUR_THRESHOLD) {
+
+        // stronger tilt = faster pour
+        const SPEED_MULTIPLIER = 10; // tune this
+        const pourSpeed = (tiltAmount - POUR_THRESHOLD) * SPEED_MULTIPLIER;
+
+        // fullness slows pouring (realistic physics)
+        const fullnessFactor = 1 - (currentFill / 100);
+
+        const adjustedSpeed = pourSpeed * fullnessFactor;
+
+        // apply fill over time
+        currentFill += adjustedSpeed * deltaTime;
+        currentFill = Math.min(currentFill, 100);
+
+        setFillLevel(currentFill);
+
+        if (currentFill >= 100) {
+          tiltEnabled = false;
+        }
+
+      }
+    }
+
     if (easedIntensity > 0.05) {
       lastTiltTime = Date.now();
     }
@@ -865,6 +921,7 @@ if (isMenuPage) {
     // auto-disable tilt after 1.5 seconds
     if (Date.now() - lastTiltTime > 1500) {
       tiltEnabled = false;
+      setFillLevel(currentFill);
       if (isPouring) {
         fadeOutAudio(pourSound, 300);
         isPouring = false;

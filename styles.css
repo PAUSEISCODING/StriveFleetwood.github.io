@@ -1223,11 +1223,8 @@ body.light .carousel-btn {
 
 #pourButtonWrapper {
   position: fixed;
-  bottom: 90px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 600px;
-  height: 600px;
+  inset: 0;
+  pointer-events: none;
   z-index: 9998;
   pointer-events: none;
 }
@@ -1236,8 +1233,8 @@ body.light .carousel-btn {
   position: absolute;
   pointer-events: auto;
   opacity: 0;
-  top: 80%;
-  left: 41.5%;
+  top: 87.75%;
+  left: 50%;
   transform: translate(-50%, -50%);
   width: 100px;
   height: 100px;
@@ -1253,8 +1250,9 @@ body.light .carousel-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9001;
+  z-index: 9001; /*It's Over 9000!*/
 }
+
 .pour-button::before {
   content: "";
   position: absolute;
@@ -1284,7 +1282,24 @@ body.light .carousel-btn {
 
 .pour-button.show {
   opacity: 1;
-  animation: pourRise 0.6s ease-out forwards;
+  animation: pourShow 0.6s ease-out forwards;
+}
+
+@keyframes pourShow {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 80px)) scale(0.75);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(-50%, calc(-50% - 20px)) scale(1.15);
+  }
+  70% {
+    transform: translate(-50%, calc(-50% + 8px)) scale(0.95);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 #pourButtonInner {
@@ -1297,9 +1312,9 @@ body.light .carousel-btn {
 
 #closePour {
   position: absolute;
-  top: calc(80% + 50px);
-  left: calc(41.5% + 140px);
-  transform: translateY(-50%);
+  top: calc(87.75% + 50px); 
+  left: calc(50% + 140px);
+  transform: translate(-50%, -50%);
   background: rgba(0, 0, 0, 0.533);
   color: white;
   border-radius: 50%;
@@ -1314,6 +1329,12 @@ body.light .carousel-btn {
   z-index: 10;
   opacity: 0;
   transition: opacity 0.3s ease;
+
+  transition:
+    top 0.6s cubic-bezier(.25,1.4,.4,1),
+    left 0.6s cubic-bezier(.25,1.4,.4,1),
+    opacity 0.3s ease;
+
   transform-origin: center;
 }
 
@@ -1343,14 +1364,14 @@ body.light .carousel-btn {
   0% {
     transform: translateY(-50%) scale(1);
   }
-  40% {
+  10% {
     transform: translateY(-50%) scale(0.75);
   }
-  70% {
+  40% {
     transform: translateY(-50%) scale(1.08);
   }
   100% {
-    transform: translateY(-50%) scale(1);
+    transform: translateY(-50%) scale(0);
   }
 }
 
@@ -1446,7 +1467,92 @@ body.light .carousel-btn {
   transform: translateX(-250px)
 }
 
-/* NEWS STUFF - no touchy */
+.pour-button.expand {
+  animation: pourExpand 0.6s cubic-bezier(.25,1.4,.4,1) forwards;
+}
+
+@keyframes pourExpand {
+  0% {
+    top: 87.75%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    top: 50vh;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(3);
+  }
+}
+
+.pour-button.expand svg {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#closePour.expand {
+  animation: closeExpand 0.6s cubic-bezier(.25,1.4,.4,1) forwards;
+}
+
+@keyframes closeExpand {
+  0% {
+    top: calc(80% + 50px);
+    left: calc(50% + 140px);
+    transform: translate(-50%, -50%) scale(0.7);
+    opacity: 1;
+  }
+  100% {
+    top: calc(87.75% + 0px);
+    left: calc(50% + 0px);
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 1;
+  }
+}
+
+#liquidFill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0%; /* starts empty */
+  background: #784421; /* coffee colour */
+  transition: height 0.25s ease-out;
+}
+
+#coffeeSurface {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  pointer-events: none;
+}
+
+#pourContainer {
+  position: absolute;
+  top: 50vh;
+  left: 50%;
+  width: 235px;
+  height: 235px;
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  background: var(--button-bg);
+  overflow: hidden; /* clips the rising liquid */
+  z-index: 9999;
+  pointer-events: none;
+  transition: transform 0.6s cubic-bezier(.25,1.4,.4,1);
+}
+
+.centreline {
+  width: 1px;
+  height: 200vh;
+  position: absolute;
+  left: 50%;
+  background: rgb(255, 0, 0);
+  display: block;
+  z-index: 10000;
+}
+
+/* NEWS STUFF - no touchy (not so new stuff anymore)*/
 
 .social-feed {
   max-width: 1000px;
