@@ -735,6 +735,7 @@ if (isMenuPage) {
     closeBtn.classList.add("expand");
 
     pourButton.classList.add("expand");
+    console.log("Tilt ENABLED");
     setTimeout(() => {
       const pc = document.getElementById("pourContainer");
       pc.style.opacity = "1";
@@ -855,9 +856,15 @@ function setFillLevel(level) {
 
   // main tilt handler
   window.addEventListener("devicemotion", (e) => {
+    console.log("devicemotion fired");
 
     if (!motionAllowed || !audioUnlocked) return;
     if (document.hidden) return;
+
+    if (!motionAllowed || !audioUnlocked) {
+      console.log("Blocked: motionAllowed =", motionAllowed, "audioUnlocked =", audioUnlocked);
+      return;
+    }
 
     const g = e.accelerationIncludingGravity;
 
@@ -873,6 +880,8 @@ function setFillLevel(level) {
 
     smoothedTiltX = smoothedTiltX + (rawTiltX - smoothedTiltX) * smoothingFactor;
 
+    console.log("Tilt:", smoothedTiltX);
+
     let intensity = Math.abs(smoothedTiltX) / 8;
     intensity = Math.min(intensity, 1);
 
@@ -883,6 +892,8 @@ function setFillLevel(level) {
     panner.pan.value = panValue;
 
     if (tiltEnabled) {
+
+      console.log("Pouring: tilt =", tiltAmount, "speed =", adjustedSpeed, "fill =", currentFill);
 
       const now = performance.now();
       const deltaTime = (now - lastTime) / 1000;
