@@ -735,7 +735,10 @@ if (isMenuPage) {
     closeBtn.classList.add("expand");
 
     pourButton.classList.add("expand");
-    document.getElementById("pourContainer").style.opacity = "1";
+    setTimeout(() => {
+      const pc = document.getElementById("pourContainer");
+      pc.style.opacity = "1";
+    }, 600); // same duration as pourExpand
 
     setFillLevel(0); // reset fill
     currentFill = 0;
