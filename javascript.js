@@ -896,13 +896,14 @@ function setFillLevel(level) {
         const SPEED_MULTIPLIER = 10;
         const pourSpeed = (tiltAmount - POUR_THRESHOLD) * SPEED_MULTIPLIER;
 
-        // softened slowdown curve
-        const fullnessFactor = Math.sqrt(1 - (currentFill / 100));
+        // protect against negative values
+        const rawFullness = 1 - (currentFill / 100);
+        const fullnessFactor = Math.sqrt(Math.max(0, rawFullness));
 
         const adjustedSpeed = pourSpeed * fullnessFactor;
 
         currentFill += adjustedSpeed * deltaTime;
-        currentFill = Math.min(currentFill, 100);
+        currentFill = Math.min(currentFill, 100);  // clamp BEFORE next frame
 
         setFillLevel(currentFill);
       }
