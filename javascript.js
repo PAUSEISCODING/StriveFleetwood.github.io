@@ -735,8 +735,7 @@ if (isMenuPage) {
     closeBtn.classList.add("expand");
 
     pourButton.classList.add("expand");
-    document.getElementById("pourContainer").style.transform =
-      "translate(-50%, -50%) scale(1)";
+    document.getElementById("pourContainer").style.opacity = "1";
 
     setFillLevel(0); // reset fill
     currentFill = 0;
@@ -883,34 +882,26 @@ function setFillLevel(level) {
     if (tiltEnabled) {
 
       const now = performance.now();
-      const deltaTime = (now - lastTime) / 1000; // seconds
+      const deltaTime = (now - lastTime) / 1000;
       lastTime = now;
 
       const tiltAmount = Math.abs(smoothedTiltX);
-
-      const POUR_THRESHOLD = 2.5; // minimum tilt needed to pour
+      const POUR_THRESHOLD = 2.5;
 
       if (tiltAmount > POUR_THRESHOLD) {
 
-        // stronger tilt = faster pour
-        const SPEED_MULTIPLIER = 10; // tune this
+        const SPEED_MULTIPLIER = 10;
         const pourSpeed = (tiltAmount - POUR_THRESHOLD) * SPEED_MULTIPLIER;
 
-        // fullness slows pouring (realistic physics)
-        const fullnessFactor = 1 - (currentFill / 100);
+        // softened slowdown curve
+        const fullnessFactor = Math.sqrt(1 - (currentFill / 100));
 
         const adjustedSpeed = pourSpeed * fullnessFactor;
 
-        // apply fill over time
         currentFill += adjustedSpeed * deltaTime;
         currentFill = Math.min(currentFill, 100);
 
         setFillLevel(currentFill);
-
-        if (currentFill >= 100) {
-          tiltEnabled = false;
-        }
-
       }
     }
 
