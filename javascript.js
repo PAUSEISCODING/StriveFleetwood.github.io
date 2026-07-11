@@ -901,39 +901,41 @@ function setFillLevel(level) {
       lastTime = now;
 
       const tiltAmount = Math.abs(smoothedTiltX);
-      const POUR_THRESHOLD = 4.5;
+
+      // lower threshold so small tilt still counts
+      const POUR_THRESHOLD = 3.0;
 
       if (tiltAmount > POUR_THRESHOLD) {
 
-        const SPEED_MULTIPLIER = 10;
+        // moderate speed
+        const SPEED_MULTIPLIER = 7;
+
         const tiltOver = tiltAmount - POUR_THRESHOLD;
 
-        // dribble zone curve
-        const dribbleFactor = Math.pow(tiltOver / 10, 1.5); 
-        // 0.0 → 0.1 → 0.3 → 0.7 → 1.0
+        // softer dribble curve
+        const dribbleFactor = Math.pow(tiltOver / 10, 1.1);
+        // 0.1 → 0.2 → 0.4 → 0.7 → 1.0
 
-        const pourSpeed = dribbleFactor * SPEED_MULTIPLIER;
-
-
-        // protect against negative values
+        // gentler slowdown near full
         const rawFullness = 1 - (currentFill / 100);
-        const fullnessFactor = Math.sqrt(Math.max(0, rawFullness));
+        const fullnessFactor = Math.pow(Math.max(0, rawFullness), 0.85);
 
-        const adjustedSpeed = pourSpeed * fullnessFactor;
+        const adjustedSpeed = dribbleFactor * SPEED_MULTIPLIER * fullnessFactor;
 
         currentFill += adjustedSpeed * deltaTime;
-        currentFill = Math.min(currentFill, 100);  // clamp BEFORE next frame
+        currentFill = Math.min(currentFill, 100);
 
         setFillLevel(currentFill);
 
+        // update tilt timer ONLY when pouring
+        lastTiltTime = Date.now();
+
+        // auto-close at full
         if (currentFill >= 100) {
           tiltEnabled = false;
           fadeOutAudio(pourSound, 200);
-          closeBtn.click(); // simulate user closing
+          closeBtn.click();
         }
-
-        console.log("Pouring: tilt =", tiltAmount, "speed =", adjustedSpeed, "fill =", currentFill);
-
       }
     }
 
