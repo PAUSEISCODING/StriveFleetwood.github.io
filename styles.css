@@ -1543,6 +1543,10 @@ body.light .carousel-btn {
   transition: opacity 0.2s ease-out;
 }
 
+#pourContainer.hide {
+  opacity: 0;
+}
+
 .centreline {
   width: 1px;
   height: 200vh;

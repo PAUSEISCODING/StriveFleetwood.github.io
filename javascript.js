@@ -575,6 +575,7 @@ if (isMenuPage) {
   const pourButton = document.getElementById("pourButton");
   const sparkCanvas = document.getElementById("sparkCanvas");
   const closeBtn = document.getElementById("closePour");
+  const pourContainer = document.getElementById("pourContainer");
   closeBtn.style.opacity = "0";
   closeBtn.style.pointerEvents = "none";
   pourButton.appendChild(sparkCanvas);
@@ -602,6 +603,7 @@ if (isMenuPage) {
     // hide close button
     closeBtn.style.opacity = "0";
     closeBtn.style.pointerEvents = "none";
+    pourContainer.style.opacity = "0";
 
     // vanish pour button
     hidePourButton();
@@ -735,22 +737,23 @@ if (isMenuPage) {
     closeBtn.classList.add("expand");
 
     pourButton.classList.add("expand");
-    console.log("Tilt ENABLED");
+
     setTimeout(() => {
       const pc = document.getElementById("pourContainer");
       pc.style.opacity = "1";
-    }, 600); // same duration as pourExpand
+
+      // enable tilt
+      tiltEnabled = true;
+      lastTiltTime = Date.now();
+      startPouring();
+    }, 600);
 
     setFillLevel(0); // reset fill
     currentFill = 0;
     lastTime = performance.now();
 
-    // audio + tilt stuff stays the same
     unlockAudio();
     await requestMotionPermission();
-    tiltEnabled = true;
-    lastTiltTime = Date.now();
-    startPouring();
   });
 
 function setFillLevel(level) {
@@ -893,8 +896,6 @@ function setFillLevel(level) {
 
     if (tiltEnabled) {
 
-      console.log("Pouring: tilt =", tiltAmount, "speed =", adjustedSpeed, "fill =", currentFill);
-
       const now = performance.now();
       const deltaTime = (now - lastTime) / 1000;
       lastTime = now;
@@ -917,6 +918,9 @@ function setFillLevel(level) {
         currentFill = Math.min(currentFill, 100);  // clamp BEFORE next frame
 
         setFillLevel(currentFill);
+
+        console.log("Pouring: tilt =", tiltAmount, "speed =", adjustedSpeed, "fill =", currentFill);
+
       }
     }
 
