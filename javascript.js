@@ -905,7 +905,7 @@ function setFillLevel(level) {
 
       if (tiltAmount > POUR_THRESHOLD) {
 
-        const SPEED_MULTIPLIER = 5;
+        const SPEED_MULTIPLIER = 8;
         const tiltOver = tiltAmount - POUR_THRESHOLD;
 
         // dribble zone curve
