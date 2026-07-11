@@ -902,22 +902,22 @@ function setFillLevel(level) {
 
       const tiltAmount = Math.abs(smoothedTiltX);
 
-      // lower threshold so small tilt still counts
-      const POUR_THRESHOLD = 2.8;
+      // lower threshold so pouring starts earlier
+      const POUR_THRESHOLD = 2.5;
 
       if (tiltAmount > POUR_THRESHOLD) {
 
-        // moderate speed
-        const SPEED_MULTIPLIER = 12;
+        // strong base speed
+        const SPEED_MULTIPLIER = 14;
 
         const tiltOver = tiltAmount - POUR_THRESHOLD;
 
-        // softer dribble curve
-        const dribbleFactor = Math.pow(tiltOver / 10, 1.05);
+        // gentle dribble curve (almost linear)
+        const dribbleFactor = Math.pow(tiltOver / 10, 0.9);
 
-        // gentler slowdown near full
+        // gentle slowdown near full
         const rawFullness = 1 - (currentFill / 100);
-        const fullnessFactor = Math.pow(Math.max(0, rawFullness), 0.9);
+        const fullnessFactor = Math.pow(Math.max(0, rawFullness), 0.95);
 
         const adjustedSpeed = dribbleFactor * SPEED_MULTIPLIER * fullnessFactor;
 
