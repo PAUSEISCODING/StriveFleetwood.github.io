@@ -916,10 +916,8 @@ function setFillLevel(level) {
         const dribbleFactor = Math.pow(tiltOver / 10, 0.9);
 
         // gentle slowdown near full
-        const rawFullness = 1 - (currentFill / 100);
-        const fullnessFactor = Math.pow(Math.max(0, rawFullness), 0.95);
+        const adjustedSpeed = dribbleFactor * SPEED_MULTIPLIER;
 
-        const adjustedSpeed = dribbleFactor * SPEED_MULTIPLIER * fullnessFactor;
 
         currentFill += adjustedSpeed * deltaTime;
         currentFill = Math.min(currentFill, 100);
