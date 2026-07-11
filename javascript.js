@@ -901,12 +901,19 @@ function setFillLevel(level) {
       lastTime = now;
 
       const tiltAmount = Math.abs(smoothedTiltX);
-      const POUR_THRESHOLD = 2.5;
+      const POUR_THRESHOLD = 4.5;
 
       if (tiltAmount > POUR_THRESHOLD) {
 
-        const SPEED_MULTIPLIER = 10;
-        const pourSpeed = (tiltAmount - POUR_THRESHOLD) * SPEED_MULTIPLIER;
+        const SPEED_MULTIPLIER = 5;
+        const tiltOver = tiltAmount - POUR_THRESHOLD;
+
+        // dribble zone curve
+        const dribbleFactor = Math.pow(tiltOver / 10, 1.5); 
+        // 0.0 → 0.1 → 0.3 → 0.7 → 1.0
+
+        const pourSpeed = dribbleFactor * SPEED_MULTIPLIER;
+
 
         // protect against negative values
         const rawFullness = 1 - (currentFill / 100);
@@ -918,6 +925,12 @@ function setFillLevel(level) {
         currentFill = Math.min(currentFill, 100);  // clamp BEFORE next frame
 
         setFillLevel(currentFill);
+
+        if (currentFill >= 100) {
+          tiltEnabled = false;
+          fadeOutAudio(pourSound, 200);
+          closeBtn.click(); // simulate user closing
+        }
 
         console.log("Pouring: tilt =", tiltAmount, "speed =", adjustedSpeed, "fill =", currentFill);
 
