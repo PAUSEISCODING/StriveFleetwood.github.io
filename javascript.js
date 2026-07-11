@@ -575,7 +575,7 @@ if (isMenuPage) {
   const pourButton = document.getElementById("pourButton");
   const sparkCanvas = document.getElementById("sparkCanvas");
   const closeBtn = document.getElementById("closePour");
-  const pourContainer = document.getElementById("pourContainer");
+  const pc = document.getElementById("pourContainer");
   closeBtn.style.opacity = "0";
   closeBtn.style.pointerEvents = "none";
   pourButton.appendChild(sparkCanvas);
@@ -931,8 +931,6 @@ function setFillLevel(level) {
         if (currentFill >= 100) {
           tiltEnabled = false;
           fadeOutAudio(pourSound, 200);
-
-          const pc = document.getElementById("pourContainer");
 
           // linger for a moment
           setTimeout(() => {
