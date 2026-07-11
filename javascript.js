@@ -908,7 +908,7 @@ function setFillLevel(level) {
       if (tiltAmount > POUR_THRESHOLD) {
 
         // moderate speed
-        const SPEED_MULTIPLIER = 7;
+        const SPEED_MULTIPLIER = 9;
 
         const tiltOver = tiltAmount - POUR_THRESHOLD;
 
