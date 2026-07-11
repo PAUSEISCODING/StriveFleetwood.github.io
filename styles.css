@@ -1547,6 +1547,25 @@ body.light .carousel-btn {
   opacity: 0;
 }
 
+#pourContainer.full-close {
+  animation: fullCloseAnim 0.6s ease-out forwards;
+}
+
+@keyframes fullCloseAnim {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  30% {
+    transform: translate(-50%, -50%) scale(1.05); /* gentle pop */
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0;
+  }
+}
+
 .centreline {
   width: 1px;
   height: 200vh;
