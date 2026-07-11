@@ -932,17 +932,27 @@ function setFillLevel(level) {
           tiltEnabled = false;
           fadeOutAudio(pourSound, 200);
 
-          // linger for a moment
+          const pc = document.getElementById("pourContainer");
+
+          // linger before closing
           setTimeout(() => {
+
+            // animate container
             pc.classList.add("full-close");
 
-            // after animation finishes, close the pour button
+            // animate expanded pour button
+            pourButton.classList.add("full-close");
+
+            // after animations finish, reset UI
             setTimeout(() => {
               pc.classList.remove("full-close");
+              pourButton.classList.remove("full-close");
               closeBtn.click();
             }, 600); // match animation duration
+
           }, 400); // linger time
         }
+
       }
     }
 
