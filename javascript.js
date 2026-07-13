@@ -941,12 +941,17 @@ function setFillLevel(level) {
             pc.classList.add("pour-slide-out");
             pourButton.classList.add("pour-slide-out");
 
+            // fade out close button
+            closeBtn.classList.add("close-fade-out");
+
             // after animation finishes, reset UI
             setTimeout(() => {
               pc.classList.remove("pour-slide-out");
               pourButton.classList.remove("pour-slide-out");
-              closeBtn.click();
-            }, 500); // match animation duration
+              closeBtn.classList.remove("close-fade-out");
+
+              closeBtn.click(); // reset UI
+            }, 500); // match slide-out duration
 
           }, 300); // small linger
         }
