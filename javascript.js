@@ -932,30 +932,30 @@ function setFillLevel(level) {
           tiltEnabled = false;
           fadeOutAudio(pourSound, 200);
 
-          const wrapper = document.getElementById("pourButtonWrapper");
           const pc = document.getElementById("pourContainer");
+          const pourButton = document.getElementById("pourButton");
+          const closeBtn = document.getElementById("closePour");
 
-          // 1. FADE OUT EVERYTHING IMMEDIATELY
-          wrapper.querySelectorAll("*").forEach(el => {
-            el.classList.add("fade-out");
+          // make sure they can fade
+          [pc, pourButton, closeBtn].forEach(el => {
+            el.classList.add("fade-opacity");
+            el.style.opacity = "1"; // force visible before fade
           });
 
-          pc.classList.add("fade-out");
+          // 1. start fade immediately
+          [pc, pourButton, closeBtn].forEach(el => {
+            el.style.opacity = "0";
+          });
 
-          // 2. LINGER ONLY DELAYS THE HIDDEN APPLICATION
+          // 2. after fade finishes, hide them
           setTimeout(() => {
-
-            // 3. AFTER FADE COMPLETES, HIDE EVERYTHING
-            wrapper.querySelectorAll("*").forEach(el => {
-              el.classList.add("hidden");
+            [pc, pourButton, closeBtn].forEach(el => {
+              el.classList.add("hidden"); // display: none !important
             });
 
-            pc.classList.add("hidden");
-
-            // 4. Reset UI state for next pour
+            // reset state for next pour if needed
             // resetPourUI();
-
-          }, 800); // 300ms linger + 500ms fade-out
+          }, 500); // match transition duration
         }
       }
     }
