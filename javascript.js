@@ -938,20 +938,26 @@ function setFillLevel(level) {
 
           // small linger before exit
           setTimeout(() => {
-            // kill any existing animations on the button
-            pourButton.classList.remove("expand", "show", "disappear");
+
+            // 1. REMOVE EXPAND ANIMATION
+            pourButton.classList.remove("expand");
             pourButton.style.animation = "none";
 
-            // slide container + button out
+            // 2. RESET TRANSFORM SO SLIDE-OUT CAN TAKE OVER
+            pourButton.style.top = "50vh";
+            pourButton.style.left = "50%";
+            pourButton.style.transform = "translate(-50%, -50%) scale(3)";
+
+            // 3. APPLY SLIDE-OUT TO BOTH ELEMENTS
             pc.classList.add("pour-slide-out");
             pourButton.classList.add("pour-slide-out");
 
-            // fade out close button (no pop/boop)
+            // 4. FADE OUT CLOSE BUTTON
             closeBtn.classList.remove("pop", "boop", "expand");
             closeBtn.style.animation = "none";
             closeBtn.classList.add("close-fade-out");
 
-            // after slide-out finishes, hard-hide everything
+            // 5. HARD-HIDE EVERYTHING AFTER ANIMATION
             setTimeout(() => {
               pc.classList.remove("pour-slide-out");
               pourButton.classList.remove("pour-slide-out");
@@ -965,16 +971,18 @@ function setFillLevel(level) {
               pourButton.style.pointerEvents = "none";
               closeBtn.style.pointerEvents = "none";
 
-              // reset transforms so next open starts clean
-              pc.style.transform = "translate(-50%, -50%)";
+              // reset transforms for next pour
               pourButton.style.transform = "translate(-50%, -50%) scale(1)";
+              pc.style.transform = "translate(-50%, -50%)";
 
-              // whatever you use to reset state:
+              // your reset function
               // resetPourUI();
-            }, 800); // match pourSlideOut duration
 
-          }, 300); // linger before whoop
+            }, 800);
+
+          }, 300);
         }
+
       }
     }
 
