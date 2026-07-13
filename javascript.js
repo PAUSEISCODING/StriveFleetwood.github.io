@@ -933,38 +933,47 @@ function setFillLevel(level) {
           fadeOutAudio(pourSound, 200);
 
           const pc = document.getElementById("pourContainer");
-          const expanded = document.getElementById("pourButton"); // IMPORTANT
+          const pourButton = document.getElementById("pourButton");
+          const closeBtn = document.getElementById("closePour");
 
-          // small linger before whoop
+          // small linger before exit
           setTimeout(() => {
+            // kill any existing animations on the button
+            pourButton.classList.remove("expand", "show", "disappear");
+            pourButton.style.animation = "none";
 
-            // slide both elements out
+            // slide container + button out
             pc.classList.add("pour-slide-out");
-            expanded.classList.add("pour-slide-out");
+            pourButton.classList.add("pour-slide-out");
 
-            // fade out close button
+            // fade out close button (no pop/boop)
+            closeBtn.classList.remove("pop", "boop", "expand");
+            closeBtn.style.animation = "none";
             closeBtn.classList.add("close-fade-out");
 
-            // prevent swirl animation
-            closeBtn.classList.add("no-swirl");
-
-            // after animation finishes, reset UI
+            // after slide-out finishes, hard-hide everything
             setTimeout(() => {
               pc.classList.remove("pour-slide-out");
-              expanded.classList.remove("pour-slide-out");
+              pourButton.classList.remove("pour-slide-out");
               closeBtn.classList.remove("close-fade-out");
-              closeBtn.classList.remove("no-swirl");
 
-              // manually hide close button
+              pc.style.opacity = "0";
+              pourButton.style.opacity = "0";
               closeBtn.style.opacity = "0";
+
+              pc.style.pointerEvents = "none";
+              pourButton.style.pointerEvents = "none";
               closeBtn.style.pointerEvents = "none";
 
-              // manually reset UI
-              resetPourUI();
+              // reset transforms so next open starts clean
+              pc.style.transform = "translate(-50%, -50%)";
+              pourButton.style.transform = "translate(-50%, -50%) scale(1)";
 
-            }, 800); // match slide-out duration
+              // whatever you use to reset state:
+              // resetPourUI();
+            }, 800); // match pourSlideOut duration
 
-          }, 300); // small linger
+          }, 300); // linger before whoop
         }
       }
     }
