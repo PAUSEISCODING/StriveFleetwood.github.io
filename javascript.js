@@ -934,25 +934,22 @@ function setFillLevel(level) {
 
           const pc = document.getElementById("pourContainer");
 
-          // linger before closing
+          // small linger before whoop
           setTimeout(() => {
 
-            // animate container
-            pc.classList.add("full-close");
+            // slide both elements out
+            pc.classList.add("pour-slide-out");
+            pourButton.classList.add("pour-slide-out");
 
-            // animate expanded pour button
-            pourButton.classList.add("full-close");
-
-            // after animations finish, reset UI
+            // after animation finishes, reset UI
             setTimeout(() => {
-              pc.classList.remove("full-close");
-              pourButton.classList.remove("full-close");
+              pc.classList.remove("pour-slide-out");
+              pourButton.classList.remove("pour-slide-out");
               closeBtn.click();
-            }, 600); // match animation duration
+            }, 500); // match animation duration
 
-          }, 400); // linger time
+          }, 300); // small linger
         }
-
       }
     }
 
