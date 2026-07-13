@@ -936,26 +936,27 @@ function setFillLevel(level) {
           const pourButton = document.getElementById("pourButton");
           const closeBtn = document.getElementById("closePour");
 
-          // make sure they can fade
-          [pc, pourButton, closeBtn].forEach(el => {
-            el.classList.add("fade-opacity");
-            el.style.opacity = "1"; // force visible before fade
-          });
+          // FORCE ALL ELEMENTS TO A KNOWN VISIBLE STATE
+          pc.style.opacity = "1";
+          pourButton.style.opacity = "1";
+          closeBtn.style.opacity = "1";   // ← THIS IS THE FIX
 
-          // 1. start fade immediately
-          [pc, pourButton, closeBtn].forEach(el => {
-            el.style.opacity = "0";
-          });
+          // ENSURE THEY CAN FADE
+          pc.classList.add("fade-opacity");
+          pourButton.classList.add("fade-opacity");
+          closeBtn.classList.add("fade-opacity");
 
-          // 2. after fade finishes, hide them
+          // START FADE IMMEDIATELY
+          pc.style.opacity = "0";
+          pourButton.style.opacity = "0";
+          closeBtn.style.opacity = "0";
+
+          // AFTER FADE COMPLETES, HIDE EVERYTHING
           setTimeout(() => {
-            [pc, pourButton, closeBtn].forEach(el => {
-              el.classList.add("hidden"); // display: none !important
-            });
-
-            // reset state for next pour if needed
-            // resetPourUI();
-          }, 500); // match transition duration
+            pc.classList.add("hidden");
+            pourButton.classList.add("hidden");
+            closeBtn.classList.add("hidden");
+          }, 500); // match fade duration
         }
       }
     }

@@ -1601,12 +1601,16 @@ body.light .carousel-btn {
   display: none !important;
 }
 
+.fade-opacity {
+  transition: opacity 0.5s ease;
+}
+
 .centreline {
   width: 1px;
   height: 200vh;
   position: absolute;
   left: 50%;
-  background: rgb(217, 255, 0);
+  background: rgb(255, 0, 0);
   display: block;
   z-index: 10000;
 }
