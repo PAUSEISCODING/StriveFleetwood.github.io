@@ -935,48 +935,27 @@ function setFillLevel(level) {
           const wrapper = document.getElementById("pourButtonWrapper");
           const pc = document.getElementById("pourContainer");
 
-          // 1. STOP ALL ANIMATIONS IMMEDIATELY
-          wrapper.querySelectorAll("*").forEach(el => {
-            el.style.animation = "none";
-            el.classList.remove("expand", "show", "disappear", "pop", "boop");
-          });
-
-          pc.style.animation = "none";
-          pc.classList.remove("expand", "full-close", "pour-slide-out");
-
-          // 2. LINGER BRIEFLY
+          // 1. Linger briefly
           setTimeout(() => {
 
-            // 3. FADE OUT EVERYTHING INSIDE BOTH CONTAINERS
+            // 2. Fade out EVERYTHING inside the wrapper
             wrapper.querySelectorAll("*").forEach(el => {
               el.classList.add("fade-out");
             });
 
+            // Fade out the pour container too
             pc.classList.add("fade-out");
 
-            // 4. HARD RESET AFTER FADE
+            // 3. After fade completes, hide everything
             setTimeout(() => {
 
               wrapper.querySelectorAll("*").forEach(el => {
-                el.classList.remove("fade-out");
-                el.style.opacity = "0";
-                el.style.pointerEvents = "none";
+                el.classList.add("hidden");
               });
 
-              pc.classList.remove("fade-out");
-              pc.style.opacity = "0";
-              pc.style.pointerEvents = "none";
+              pc.classList.add("hidden");
 
-              // 5. Reset transforms for next pour
-              wrapper.querySelectorAll("*").forEach(el => {
-                el.style.transform = "";
-                el.style.top = "";
-                el.style.left = "";
-              });
-
-              pc.style.transform = "translate(-50%, -50%)";
-
-              // 6. Your reset function
+              // 4. Reset fill state or whatever you need
               // resetPourUI();
 
             }, 500); // fade-out duration
