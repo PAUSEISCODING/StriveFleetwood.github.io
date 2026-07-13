@@ -933,25 +933,36 @@ function setFillLevel(level) {
           fadeOutAudio(pourSound, 200);
 
           const pc = document.getElementById("pourContainer");
+          const expanded = document.getElementById("pourButton"); // IMPORTANT
 
           // small linger before whoop
           setTimeout(() => {
 
             // slide both elements out
             pc.classList.add("pour-slide-out");
-            pourButton.classList.add("pour-slide-out");
+            expanded.classList.add("pour-slide-out");
 
             // fade out close button
             closeBtn.classList.add("close-fade-out");
 
+            // prevent swirl animation
+            closeBtn.classList.add("no-swirl");
+
             // after animation finishes, reset UI
             setTimeout(() => {
               pc.classList.remove("pour-slide-out");
-              pourButton.classList.remove("pour-slide-out");
+              expanded.classList.remove("pour-slide-out");
               closeBtn.classList.remove("close-fade-out");
+              closeBtn.classList.remove("no-swirl");
 
-              closeBtn.click(); // reset UI
-            }, 500); // match slide-out duration
+              // manually hide close button
+              closeBtn.style.opacity = "0";
+              closeBtn.style.pointerEvents = "none";
+
+              // manually reset UI
+              resetPourUI();
+
+            }, 800); // match slide-out duration
 
           }, 300); // small linger
         }

@@ -1567,7 +1567,7 @@ body.light .carousel-btn {
 }
 
 .pour-slide-out {
-  animation: pourSlideOut 0.5s cubic-bezier(0.25, 1.25, 0.5, 1) forwards;
+  animation: pourSlideOut 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
 }
 
 @keyframes pourSlideOut {
@@ -1575,29 +1575,7 @@ body.light .carousel-btn {
     transform: translate(-50%, -50%) scale(1);
   }
   100% {
-    transform: translate(-50%, -150vh) scale(1); /* whoop upward */
-  }
-}
-
-.close-fade-out {
-  animation: closeFadeOut 0.3s ease forwards;
-}
-
-@keyframes closeFadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-.pour-slide-out {
-  animation: pourSlideOut 0.5s cubic-bezier(0.25, 1.25, 0.5, 1) forwards;
-}
-
-@keyframes pourSlideOut {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-  }
-  100% {
-    transform: translate(-50%, -150vh) scale(1); /* guaranteed off-screen */
+    transform: translate(-50%, -150vh) scale(1);
   }
 }
 
