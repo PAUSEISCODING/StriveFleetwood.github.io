@@ -1606,7 +1606,7 @@ body.light .carousel-btn {
   height: 200vh;
   position: absolute;
   left: 50%;
-  background: rgb(221, 0, 255);
+  background: rgb(217, 255, 0);
   display: block;
   z-index: 10000;
 }

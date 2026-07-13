@@ -935,32 +935,27 @@ function setFillLevel(level) {
           const wrapper = document.getElementById("pourButtonWrapper");
           const pc = document.getElementById("pourContainer");
 
-          // 1. Linger briefly
+          // 1. FADE OUT EVERYTHING IMMEDIATELY
+          wrapper.querySelectorAll("*").forEach(el => {
+            el.classList.add("fade-out");
+          });
+
+          pc.classList.add("fade-out");
+
+          // 2. LINGER ONLY DELAYS THE HIDDEN APPLICATION
           setTimeout(() => {
 
-            // 2. Fade out EVERYTHING inside the wrapper
+            // 3. AFTER FADE COMPLETES, HIDE EVERYTHING
             wrapper.querySelectorAll("*").forEach(el => {
-              el.classList.add("fade-out");
+              el.classList.add("hidden");
             });
 
-            // Fade out the pour container too
-            pc.classList.add("fade-out");
+            pc.classList.add("hidden");
 
-            // 3. After fade completes, hide everything
-            setTimeout(() => {
+            // 4. Reset UI state for next pour
+            // resetPourUI();
 
-              wrapper.querySelectorAll("*").forEach(el => {
-                el.classList.add("hidden");
-              });
-
-              pc.classList.add("hidden");
-
-              // 4. Reset fill state or whatever you need
-              // resetPourUI();
-
-            }, 500); // fade-out duration
-
-          }, 300); // linger duration
+          }, 800); // 300ms linger + 500ms fade-out
         }
       }
     }
