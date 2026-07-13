@@ -932,58 +932,51 @@ function setFillLevel(level) {
           tiltEnabled = false;
           fadeOutAudio(pourSound, 200);
 
+          const wrapper = document.getElementById("pourButtonWrapper");
           const pc = document.getElementById("pourContainer");
-          const pourButton = document.getElementById("pourButton");
-          const closeBtn = document.getElementById("closePour");
 
           // 1. STOP ALL ANIMATIONS IMMEDIATELY
-          pc.style.animation = "none";
-          pourButton.style.animation = "none";
-          closeBtn.style.animation = "none";
+          wrapper.querySelectorAll("*").forEach(el => {
+            el.style.animation = "none";
+            el.classList.remove("expand", "show", "disappear", "pop", "boop");
+          });
 
+          pc.style.animation = "none";
           pc.classList.remove("expand", "full-close", "pour-slide-out");
-          pourButton.classList.remove("expand", "show", "disappear", "pour-slide-out");
-          closeBtn.classList.remove("pop", "boop", "expand", "close-fade-out");
 
           // 2. LINGER BRIEFLY
           setTimeout(() => {
 
-            // 3. FADE OUT ALL ELEMENTS TOGETHER
+            // 3. FADE OUT EVERYTHING INSIDE BOTH CONTAINERS
+            wrapper.querySelectorAll("*").forEach(el => {
+              el.classList.add("fade-out");
+            });
+
             pc.classList.add("fade-out");
-            pourButton.classList.add("fade-out");
-            closeBtn.classList.add("fade-out");
 
             // 4. HARD RESET AFTER FADE
             setTimeout(() => {
 
-              // remove fade class
+              wrapper.querySelectorAll("*").forEach(el => {
+                el.classList.remove("fade-out");
+                el.style.opacity = "0";
+                el.style.pointerEvents = "none";
+              });
+
               pc.classList.remove("fade-out");
-              pourButton.classList.remove("fade-out");
-              closeBtn.classList.remove("fade-out");
-
-              // hide everything
               pc.style.opacity = "0";
-              pourButton.style.opacity = "0";
-              closeBtn.style.opacity = "0";
-
-              // disable interactions
               pc.style.pointerEvents = "none";
-              pourButton.style.pointerEvents = "none";
-              closeBtn.style.pointerEvents = "none";
 
-              // reset transforms for next open
+              // 5. Reset transforms for next pour
+              wrapper.querySelectorAll("*").forEach(el => {
+                el.style.transform = "";
+                el.style.top = "";
+                el.style.left = "";
+              });
+
               pc.style.transform = "translate(-50%, -50%)";
-              pourButton.style.transform = "translate(-50%, -50%) scale(1)";
-              closeBtn.style.transform = "translate(-50%, -50%) scale(1)";
 
-              // reset positions
-              pourButton.style.top = "87.75%";
-              pourButton.style.left = "50%";
-
-              closeBtn.style.top = "calc(87.75% + 50px)";
-              closeBtn.style.left = "calc(50% + 140px)";
-
-              // your reset function
+              // 6. Your reset function
               // resetPourUI();
 
             }, 500); // fade-out duration
