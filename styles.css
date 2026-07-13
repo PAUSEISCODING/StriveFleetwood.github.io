@@ -1588,12 +1588,21 @@ body.light .carousel-btn {
   to { opacity: 0; }
 }
 
+.fade-out {
+  animation: fadeOut 0.5s ease forwards;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 .centreline {
   width: 1px;
   height: 200vh;
   position: absolute;
   left: 50%;
-  background: rgb(255, 145, 0);
+  background: rgb(0, 255, 38);
   display: block;
   z-index: 10000;
 }

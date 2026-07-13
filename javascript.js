@@ -936,53 +936,60 @@ function setFillLevel(level) {
           const pourButton = document.getElementById("pourButton");
           const closeBtn = document.getElementById("closePour");
 
-          // small linger before exit
+          // 1. STOP ALL ANIMATIONS IMMEDIATELY
+          pc.style.animation = "none";
+          pourButton.style.animation = "none";
+          closeBtn.style.animation = "none";
+
+          pc.classList.remove("expand", "full-close", "pour-slide-out");
+          pourButton.classList.remove("expand", "show", "disappear", "pour-slide-out");
+          closeBtn.classList.remove("pop", "boop", "expand", "close-fade-out");
+
+          // 2. LINGER BRIEFLY
           setTimeout(() => {
 
-            // 1. REMOVE EXPAND ANIMATION
-            pourButton.classList.remove("expand");
-            pourButton.style.animation = "none";
+            // 3. FADE OUT ALL ELEMENTS TOGETHER
+            pc.classList.add("fade-out");
+            pourButton.classList.add("fade-out");
+            closeBtn.classList.add("fade-out");
 
-            // 2. RESET TRANSFORM SO SLIDE-OUT CAN TAKE OVER
-            pourButton.style.top = "50vh";
-            pourButton.style.left = "50%";
-            pourButton.style.transform = "translate(-50%, -50%) scale(3)";
-
-            // 3. APPLY SLIDE-OUT TO BOTH ELEMENTS
-            pc.classList.add("pour-slide-out");
-            pourButton.classList.add("pour-slide-out");
-
-            // 4. FADE OUT CLOSE BUTTON
-            closeBtn.classList.remove("pop", "boop", "expand");
-            closeBtn.style.animation = "none";
-            closeBtn.classList.add("close-fade-out");
-
-            // 5. HARD-HIDE EVERYTHING AFTER ANIMATION
+            // 4. HARD RESET AFTER FADE
             setTimeout(() => {
-              pc.classList.remove("pour-slide-out");
-              pourButton.classList.remove("pour-slide-out");
-              closeBtn.classList.remove("close-fade-out");
 
+              // remove fade class
+              pc.classList.remove("fade-out");
+              pourButton.classList.remove("fade-out");
+              closeBtn.classList.remove("fade-out");
+
+              // hide everything
               pc.style.opacity = "0";
               pourButton.style.opacity = "0";
               closeBtn.style.opacity = "0";
 
+              // disable interactions
               pc.style.pointerEvents = "none";
               pourButton.style.pointerEvents = "none";
               closeBtn.style.pointerEvents = "none";
 
-              // reset transforms for next pour
-              pourButton.style.transform = "translate(-50%, -50%) scale(1)";
+              // reset transforms for next open
               pc.style.transform = "translate(-50%, -50%)";
+              pourButton.style.transform = "translate(-50%, -50%) scale(1)";
+              closeBtn.style.transform = "translate(-50%, -50%) scale(1)";
+
+              // reset positions
+              pourButton.style.top = "87.75%";
+              pourButton.style.left = "50%";
+
+              closeBtn.style.top = "calc(87.75% + 50px)";
+              closeBtn.style.left = "calc(50% + 140px)";
 
               // your reset function
               // resetPourUI();
 
-            }, 800);
+            }, 500); // fade-out duration
 
-          }, 300);
+          }, 300); // linger duration
         }
-
       }
     }
 
