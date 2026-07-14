@@ -1328,4 +1328,61 @@ if (isMenuPage) {
       }
     }
   }
+
+  // ACTUAL MENU JS STUFF
+
+  const categories = document.querySelectorAll('.subcategory-title');
+  const items = document.querySelectorAll('.menu-item');
+
+  categories.forEach(cat => {
+    cat.addEventListener('click', () => {
+
+      categories.forEach(c => c.classList.remove('active'));
+      cat.classList.add('active');
+
+      const filter = cat.dataset.filter;
+
+      // 1. Fade out ALL items
+      items.forEach(item => {
+        item.classList.remove('fade-in');
+        item.classList.add('fade-out');
+      });
+
+      // 2. After fade-out finishes, hide all and show only matches
+      setTimeout(() => {
+
+        items.forEach((item, index) => {
+          const itemCat = item.dataset.category;
+
+          if (filter === "all" || itemCat === filter) {
+            // show but invisible
+            item.classList.remove('hidden-item', 'fade-out');
+            item.classList.add('pre-fade-in');
+
+            // staggered fade-in
+            setTimeout(() => {
+              item.classList.remove('pre-fade-in');
+              item.classList.add('fade-in');
+            }, index * 50); // 50ms per card
+          } else {
+            item.classList.add('hidden-item');
+          }
+        });
+
+      }, 250); // match fade-out duration
+
+    });
+  });
+
+  const sidebar = document.querySelector('.menu-sidebar');
+  const originalTop = sidebar.offsetTop;
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > originalTop - 120) {
+      sidebar.classList.add('stuck');
+    } else {
+      sidebar.classList.remove('stuck');
+    }
+  });
+
 }
