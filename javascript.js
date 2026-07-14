@@ -932,33 +932,17 @@ function setFillLevel(level) {
           tiltEnabled = false;
           fadeOutAudio(pourSound, 200);
 
+          const wrapper = document.getElementById("pourButtonWrapper");
           const pc = document.getElementById("pourContainer");
-          const pourButton = document.getElementById("pourButton");
-          const closeBtn = document.getElementById("closePour");
 
-          // 1. Freeze close button position to prevent blip
-          const rect = closeBtn.getBoundingClientRect();
-          closeBtn.style.position = "fixed";
-          closeBtn.style.top = rect.top + "px";
-          closeBtn.style.left = rect.left + "px";
-          closeBtn.style.transform = "translate(0, 0) scale(1.5)";
-          closeBtn.style.opacity = "1";
+          // fade out EVERYTHING at once
+          wrapper.classList.add("fade-out");
+          pc.classList.add("fade-out");
 
-          // 2. Enable fade transitions
-          [pc, pourButton, closeBtn].forEach(el => {
-            el.classList.add("fade-opacity");
-          });
-
-          // 3. Fade out immediately
-          pc.style.opacity = "0";
-          pourButton.style.opacity = "0";
-          closeBtn.style.opacity = "0";
-
-          // 4. After fade finishes, hide everything
+          // after fade finishes, hide everything
           setTimeout(() => {
+            wrapper.classList.add("hidden");
             pc.classList.add("hidden");
-            pourButton.classList.add("hidden");
-            closeBtn.classList.add("hidden");
           }, 500);
         }
       }
