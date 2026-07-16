@@ -579,7 +579,6 @@ if (isMenuPage) {
   closeBtn.style.opacity = "0";
   closeBtn.style.pointerEvents = "none";
   pourButton.appendChild(sparkCanvas);
-  console.log("Canvas parent:", sparkCanvas.parentElement);
   sparkCanvas.width = 600;
   sparkCanvas.height = 600;
 
@@ -595,6 +594,8 @@ if (isMenuPage) {
     setTimeout(() => closeBtn.classList.remove("boop"), 300);
 
     pourDismissed = true;
+    pourButton.disabled = true;
+    pourButton.style.transform = "translateY(200vh)";
 
     // remove movement-only expand
     pourButton.classList.remove("expand");
@@ -621,6 +622,7 @@ if (isMenuPage) {
   }
 
   function showPourButton() {
+    if (pourDismissed) return;
     pourButton.classList.add("show");
 
     // prepare close button for slide animation
@@ -655,11 +657,9 @@ if (isMenuPage) {
 
   sparkFrames.forEach((img, index) => {
     img.onload = () => {
-      console.log("Loaded frame:", index);
       sparkLoadedCount++;
       if (sparkLoadedCount === sparkFrames.length) {
         sparkLoaded = true;
-        console.log("All spark frames loaded!");
       }
     };
 
@@ -669,16 +669,13 @@ if (isMenuPage) {
   });
 
   function playSparkAnimation() {
+    if (pourDismissed) return;
 
     const buttonRect = pourButton.getBoundingClientRect();
     const canvasRect = sparkCanvas.getBoundingClientRect();
 
     const buttonCenterX = buttonRect.left + buttonRect.width / 2;
     const canvasCenterX = canvasRect.left + canvasRect.width / 2;
-
-    console.log("Button center X:", buttonCenterX);
-    console.log("Canvas center X:", canvasCenterX);
-    console.log("Difference:", canvasCenterX - buttonCenterX);
 
     const ctx = sparkCanvas.getContext("2d");
     let frame = 0;
@@ -729,7 +726,7 @@ if (isMenuPage) {
   }
 
   pourButton.addEventListener("click", async () => {
-    console.log("Pour button CLICKED");
+    if (pourDismissed) return;
 
     closeBtn.classList.remove("start-inside", "pop");
     closeBtn.style.opacity = "1";
@@ -771,7 +768,6 @@ function setFillLevel(level) {
   const smoothingFactor = 0.1;
 
   pourSound.addEventListener("canplaythrough", () => {
-    console.log("Sound loaded!");
   });
 
   const track = audioContext.createMediaElementSource(pourSound);
@@ -836,9 +832,7 @@ function setFillLevel(level) {
   }
 
   document.body.addEventListener("click", async () => {
-    console.log("Motion allowed:", motionAllowed);
     unlockAudio();
-    console.log("Audio unlocked:", audioUnlocked);
     await requestMotionPermission();
   });
 
@@ -858,14 +852,13 @@ function setFillLevel(level) {
   });
 
   // main tilt handler
+
   window.addEventListener("devicemotion", (e) => {
-    console.log("devicemotion fired");
 
     if (!motionAllowed || !audioUnlocked) return;
     if (document.hidden) return;
 
     if (!motionAllowed || !audioUnlocked) {
-      console.log("Blocked: motionAllowed =", motionAllowed, "audioUnlocked =", audioUnlocked);
       return;
     }
 
@@ -883,8 +876,6 @@ function setFillLevel(level) {
 
     smoothedTiltX = smoothedTiltX + (rawTiltX - smoothedTiltX) * smoothingFactor;
 
-    console.log("Tilt:", smoothedTiltX);
-
     let intensity = Math.abs(smoothedTiltX) / 8;
     intensity = Math.min(intensity, 1);
 
@@ -895,6 +886,7 @@ function setFillLevel(level) {
     panner.pan.value = panValue;
 
     if (tiltEnabled) {
+      if (pourDismissed) return;
 
       const now = performance.now();
       const deltaTime = (now - lastTime) / 1000;
@@ -1015,22 +1007,6 @@ if (isMenuPage) {
         
         function debugCards() {
           console.log("---- DEBUG ----");
-
-          console.log("LEFT:");
-          console.log("  offsetWidth:", leftCardB.offsetWidth);
-          console.log("  computed width:", getComputedStyle(leftCardB).width);
-          console.log("  position:", getComputedStyle(leftCardB).position);
-          console.log("  display:", getComputedStyle(leftCardB).display);
-
-          console.log("RIGHT:");
-          console.log("  offsetWidth:", rightCardB.offsetWidth);
-          console.log("  computed width:", getComputedStyle(rightCardB).width);
-          console.log("  position:", getComputedStyle(rightCardB).position);
-          console.log("  display:", getComputedStyle(rightCardB).display);
-
-          console.log("CONTAINER:");
-          console.log("  display:", getComputedStyle(carouselElB).display);
-          console.log("  flex-direction:", getComputedStyle(carouselElB).flexDirection);
         }
 
         setInterval(debugCards, 4500);
@@ -1093,7 +1069,6 @@ if (isMenuPage) {
               if (animatingB) return;
               animatingB = true;
 
-              console.log("FLIP STARTED — panelOnLeft:", panelOnLeft);
 
 
               textPanelB.classList.add(panelOnLeft ? "slide-right" : "slide-left");
@@ -1103,12 +1078,7 @@ if (isMenuPage) {
 
               // MIDPOINT
               setTimeout(() => {
-                console.log("MIDPOINT — panelOnLeft BEFORE flip:", panelOnLeft);
-                console.log("currentIndexB BEFORE:", currentIndexB, productsB[currentIndexB].title);
-                console.log("nextIndexB BEFORE:", nextIndexB, productsB[nextIndexB].title);
-
                 if (firstSwapFix) {
-                  console.log("FIRST SWAP FIX FIRING");
 
                   const skipIndex = (nextIndexB + 1) % productsB.length;
 
@@ -1136,23 +1106,15 @@ if (isMenuPage) {
                 currentIndexB = nextIndexB;
                 nextIndexB = (nextIndexB + 1) % productsB.length;
 
-                console.log("currentIndexB AFTER:", currentIndexB, productsB[currentIndexB].title);
-                console.log("nextIndexB AFTER:", nextIndexB, productsB[nextIndexB].title);
-
                 // Flip panel side
                 panelOnLeft = !panelOnLeft;
-                console.log("panelOnLeft AFTER flip:", panelOnLeft);
 
                 // Determine hidden card
                 const hidden = panelOnLeft ? "LEFT" : "RIGHT";
-                console.log("Hidden card should be:", hidden);
-
-                console.log("NORMAL SWAP FIRING");
+ 
                 if (panelOnLeft) {
-                  console.log("Swapping LEFT card to:", productsB[currentIndexB].title);
                   leftCardB.style.backgroundImage = `url(${productsB[currentIndexB].image})`;
                 } else {
-                  console.log("Swapping RIGHT card to:", productsB[currentIndexB].title);
                   rightCardB.style.backgroundImage = `url(${productsB[currentIndexB].image})`;
                 }
 
@@ -1175,9 +1137,6 @@ if (isMenuPage) {
                 textInnerB.classList.remove("fading-out");
                 textInnerB.classList.add("fading-in");
 
-
-                console.log("LEFT CARD BG NOW:", leftCardB.style.backgroundImage);
-                console.log("RIGHT CARD BG NOW:", rightCardB.style.backgroundImage);
               }, 450);
 
               // ENDPOINT
@@ -1448,5 +1407,25 @@ if (isMenuPage) {
       mFilterSheet.classList.remove('active');
     });
   }
+
+  const filterSheet = document.querySelector('.m-filter-sheet');
+  const chevron = document.querySelector('.m-filter-chevron');
+  const filterBar = document.querySelector('.m-filter-handle');
+
+  let isDown = true;
+
+  filterBar.addEventListener('click', () => {
+
+    const nextRotation = isDown ? "rotate(180deg)" : "rotate(0deg)";
+    chevron.style.transform = nextRotation;
+
+    if (isDown) {
+      filterSheet.classList.add('active');
+    } else {
+      filterSheet.classList.remove('active');
+    }
+
+    isDown = !isDown;
+  });
 
 }
