@@ -1149,7 +1149,7 @@ body.light .carousel-btn {
   color: rgb(255, 255, 255);
 }
 
-@media (max-width: 750px) {
+@media (max-width: 900px) {
 
   .carousel {
     height: auto;
@@ -1670,7 +1670,7 @@ body.light .carousel-btn {
   display: none;
 }
 
-@media (max-width: 750px) {
+@media (max-width: 900px) {
   .featured-carousel-wrapper {  /* your existing desktop carousel wrapper */
     display: none;
   }
@@ -1884,6 +1884,21 @@ body.light .mobile-text-panel-b {
 
 /* The ACTUAL Menu Section :P */
 
+.m-header {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 16px 0;
+}
+
+.m-header-divider {
+  width: 50%;
+  height: 2px;
+  background: #ddd;
+  margin: 0 auto 16px auto; /* centres it */
+  border-radius: 2px;
+}
+
 .menu-container {
   display: flex;
   gap: 40px;
@@ -2056,4 +2071,162 @@ body.light .mobile-text-panel-b {
 .subcategory-title[data-filter="all"] {
   font-weight: 700;
   margin-bottom: 20px;
+}
+
+.spacer {
+  width: 100%;
+  height: 60px;
+  position: relative;
+}
+
+/* --- MOBILE MENU --- */
+
+@media (max-width: 900px) {
+
+  /* Top filter button */
+  .m-filter-top {
+    padding: 12px;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .m-filter-button {
+    width: 100%;
+    padding: 14px;
+    background: #fff;
+    border: none;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  /* Dropdown under top filter button */
+  .m-filter-dropdown {
+    display: none;
+    background: #fff;
+    padding: 16px;
+    border-bottom: 1px solid #ddd;
+    gap: 20px;
+  }
+
+  .m-filter-dropdown.active {
+    display: flex;
+  }
+
+  /* Filter columns */
+  .filter-column h3 {
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .filter-column ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .filter-column li {
+    padding: 6px 0;
+    font-size: 14px;
+  }
+
+  /* Card grid */
+  .m-card-grid {
+    padding: 12px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Cards */
+  .m-card {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .m-card-image {
+    flex: 4;
+    width: 100%;
+  }
+
+  .m-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .m-card-info {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+  }
+
+  /* Bottom pull-up bar */
+  .m-filter-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 14px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-top: 1px solid #ddd;
+    z-index: 1000;
+  }
+
+  /* Bottom sheet */
+  .m-filter-sheet {
+    position: fixed;
+    bottom: -400px; /* move it further off-screen */
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 20px;
+    transition: bottom 0.3s ease;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    z-index: 1001;
+
+    pointer-events: none; /* FIX: sheet no longer blocks scroll */
+  }
+
+  .m-filter-sheet.active {
+    bottom: 0;
+    pointer-events: auto; /* sheet becomes interactive */
+  }
+
+}
+
+/* DESKTOP ONLY */
+@media (min-width: 901px) {
+  .m-filter-top,
+  .m-filter-dropdown,
+  .m-card-grid,
+  .m-filter-bottom-bar,
+  .m-filter-sheet {
+    display: none !important;
+  }
+}
+
+/* MOBILE ONLY */
+@media (max-width: 900px) {
+  /* Hide desktop sidebar + desktop menu */
+  .menu-sidebar-wrapper,
+  .menu-container {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
+  body {
+    padding-bottom: 50px; /* enough space for bottom bar + copyright */
+  }
 }

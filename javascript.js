@@ -1374,15 +1374,79 @@ if (isMenuPage) {
     });
   });
 
-  const sidebar = document.querySelector('.menu-sidebar');
-  const originalTop = sidebar.offsetTop;
+  let sidebar;
+  let originalTop;
 
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > originalTop - 120) {
+  function measureSidebar() {
+    sidebar = document.querySelector('.menu-sidebar');
+    if (!sidebar) return;
+
+    // Get the sidebar's position relative to the document, not the viewport
+    const rect = sidebar.getBoundingClientRect();
+    originalTop = rect.top + window.scrollY - 120;
+  }
+
+  function handleScroll() {
+    if (!sidebar) return;
+
+    if (window.scrollY > originalTop) {
       sidebar.classList.add('stuck');
     } else {
       sidebar.classList.remove('stuck');
     }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    measureSidebar();
+    handleScroll(); // ensure correct state on load
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', () => {
+      measureSidebar();
+      handleScroll();
+    });
   });
+
+  // MOBILE MENU
+
+  // Top filter dropdown toggle
+  const mFilterButton = document.querySelector('.m-filter-button');
+  const mFilterDropdown = document.querySelector('.m-filter-dropdown');
+
+  if (mFilterButton && mFilterDropdown) {
+    mFilterButton.addEventListener('click', () => {
+      mFilterDropdown.classList.toggle('active');
+    });
+  }
+
+  // Scroll detection for bottom bar
+  const mFilterTop = document.querySelector('.m-filter-top');
+  const mFilterBottomBar = document.querySelector('.m-filter-bottom-bar');
+
+  if (mFilterTop && mFilterBottomBar) {
+    window.addEventListener('scroll', () => {
+      const rect = mFilterTop.getBoundingClientRect();
+
+      if (rect.bottom < 0) {
+        mFilterBottomBar.style.display = 'flex';
+      } else {
+        mFilterBottomBar.style.display = 'none';
+      }
+    });
+  }
+
+  // Bottom sheet toggle
+  const mFilterSheet = document.querySelector('.m-filter-sheet');
+
+  if (mFilterBottomBar && mFilterSheet) {
+    mFilterBottomBar.addEventListener('click', () => {
+      mFilterSheet.classList.add('active');
+    });
+
+    // simple close: tap anywhere on sheet
+    mFilterSheet.addEventListener('click', () => {
+      mFilterSheet.classList.remove('active');
+    });
+  }
 
 }
