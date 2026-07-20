@@ -1366,9 +1366,11 @@ if (isMenuPage) {
     });
   });
 
-  // MOBILE MENU
+  /* ============================================================
+    MOBILE MENU — COLLAPSED + EXPANDED BOTTOM SHEET
+    ============================================================ */
 
-  // Top filter dropdown toggle
+  /* --- Top filter dropdown toggle --- */
   const mFilterButton = document.querySelector('.m-filter-button');
   const mFilterDropdown = document.querySelector('.m-filter-dropdown');
 
@@ -1378,54 +1380,102 @@ if (isMenuPage) {
     });
   }
 
-  // Scroll detection for bottom bar
-  const mFilterTop = document.querySelector('.m-filter-top');
-  const mFilterBottomBar = document.querySelector('.m-filter-bottom-bar');
-
-  if (mFilterTop && mFilterBottomBar) {
-    window.addEventListener('scroll', () => {
-      const rect = mFilterTop.getBoundingClientRect();
-
-      if (rect.bottom < 0) {
-        mFilterBottomBar.style.display = 'flex';
-      } else {
-        mFilterBottomBar.style.display = 'none';
-      }
-    });
-  }
-
-  // Bottom sheet toggle
-  const mFilterSheet = document.querySelector('.m-filter-sheet');
-
-  if (mFilterBottomBar && mFilterSheet) {
-    mFilterBottomBar.addEventListener('click', () => {
-      mFilterSheet.classList.add('active');
-    });
-
-    // simple close: tap anywhere on sheet
-    mFilterSheet.addEventListener('click', () => {
-      mFilterSheet.classList.remove('active');
-    });
-  }
-
+  /* --- Unified bottom sheet --- */
   const filterSheet = document.querySelector('.m-filter-sheet');
+  const filterHandle = document.querySelector('.m-filter-handle');
   const chevron = document.querySelector('.m-filter-chevron');
-  const filterBar = document.querySelector('.m-filter-handle');
+  const filterTop = document.querySelector('.m-filter-top');
 
-  let isDown = true;
+  /* Positions */
+  const FULLY_HIDDEN = -420;     // sheet fully offscreen
+  const COLLAPSED = -240;        // sheet peeking out
+  const EXPANDED = 0;            // sheet fully open
 
-  filterBar.addEventListener('click', () => {
+  let isExpanded = false;        // sheet starts collapsed/hidden
+  chevron.style.transform = "rotate(225deg)";
 
-    const nextRotation = isDown ? "rotate(180deg)" : "rotate(0deg)";
-    chevron.style.transform = nextRotation;
+  /* --- Scroll detection: collapsed sheet appears when top bar leaves screen --- */
+  window.addEventListener('scroll', () => {
+    const rect = filterTop.getBoundingClientRect();
 
-    if (isDown) {
-      filterSheet.classList.add('active');
+    if (rect.bottom < 0) {
+      if (!isExpanded) {
+        filterSheet.style.bottom = COLLAPSED + "px";
+      }
     } else {
-      filterSheet.classList.remove('active');
+      filterSheet.style.bottom = FULLY_HIDDEN + "px";
+
+      chevron.style.animation = "chevron-up 0.3s forwards";
+
+      if (isExpanded) {
+        isExpanded = false;
+      }
+    }
+  });
+
+  /* --- Toggle sheet open/close --- */
+  filterHandle.addEventListener('click', () => {
+
+    if (!isExpanded) {
+      // Expand sheet
+      filterSheet.style.bottom = EXPANDED + "px";
+      chevron.style.animation = "chevron-down 0.3s forwards";
+    } else {
+      // Collapse sheet
+      filterSheet.style.bottom = COLLAPSED + "px";
+      chevron.style.animation = "chevron-up 0.3s forwards";
     }
 
-    isDown = !isDown;
+    isExpanded = !isExpanded;
   });
+
+  const mobileFilters = document.querySelectorAll('.m-filter-column li');
+
+  mobileFilters.forEach(li => {
+    li.addEventListener('click', () => {
+
+      mobileFilters.forEach(f => f.classList.remove('active'));
+      li.classList.add('active');
+
+      const filter = li.dataset.filter;
+
+      runFilter(filter); // ← THIS MAKES FILTERING WORK
+
+      if (isExpanded) {
+        filterSheet.style.bottom = COLLAPSED + "px";
+        isExpanded = false;
+        chevron.style.animation = "chevron-down 0.3s forwards";
+      }
+    });
+  });
+
+  function runFilter(filter) {
+    const items = document.querySelectorAll('.menu-item');
+
+    // Fade out all items
+    items.forEach(item => {
+      item.classList.remove('fade-in');
+      item.classList.add('fade-out');
+    });
+
+    setTimeout(() => {
+      items.forEach((item, index) => {
+        const itemCat = item.dataset.category;
+
+        if (filter === "all" || itemCat === filter) {
+          item.classList.remove('hidden-item', 'fade-out');
+          item.classList.add('pre-fade-in');
+
+          setTimeout(() => {
+            item.classList.remove('pre-fade-in');
+            item.classList.add('fade-in');
+          }, index * 50);
+        } else {
+          item.classList.add('hidden-item');
+        }
+      });
+    }, 250);
+  }
+
 
 }

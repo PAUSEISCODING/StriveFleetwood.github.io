@@ -359,23 +359,32 @@
   <button class="m-filter-button">Filter ▼</button>
 
   <div class="m-filter-dropdown">
-    <div class="filter-column">
-      <h3>Drinks</h3>
-      <ul>
-        <li data-filter="hot-drink">Hot Drinks</li>
-        <li data-filter="soft-drink">Soft Drinks</li>
-      </ul>
-    </div>
+    <div class="m-filter-dropdown-inner">
 
-    <div class="filter-column">
-      <h3>Desserts</h3>
-      <ul>
-        <li data-filter="cakes">Cakes</li>
-        <li data-filter="brownies">Brownies</li>
-        <li data-filter="cupcakes">Cupcakes</li>
-      </ul>
+      <div class="m-filter-column">
+        <h3 class="subcategory-title" data-filter="all">All Items</h3>
+      </div>
+
+      <div class="m-filter-column">
+        <h3>Drinks</h3>
+        <ul>
+          <li class="subcategory-title" data-filter="hot-drink">Hot Drinks</li>
+          <li class="subcategory-title" data-filter="soft-drink">Soft Drinks</li>
+        </ul>
+      </div>
+
+      <div class="m-filter-column">
+        <h3>Desserts</h3>
+        <ul>
+          <li class="subcategory-title" data-filter="cakes">Cakes</li>
+          <li class="subcategory-title" data-filter="brownies">Brownies</li>
+          <li class="subcategory-title" data-filter="cupcakes">Cupcakes</li>
+        </ul>
+      </div>
+
     </div>
   </div>
+
 </div>
 
 <div class="m-card-grid">
@@ -472,38 +481,31 @@
 
 </div>
 
-<div class="m-filter-bottom-bar">
-  <div class="m-filter-handle">
-    <span class="m-filter-chevron">▲</span>
-  </div>
-  <span class="m-filter-label">Filter Menu</span>
-</div>
-
 <div class="m-filter-sheet">
 
   <div class="m-filter-handle">
-    <span class="m-filter-chevron">▲</span>
+    <span class="m-filter-chevron"></span>
   </div>
 
-  <span class="m-filter-label">Filter Menu</span>
+  <div class="m-filter-column">
+    <h3 class="subcategory-title" data-filter="all">All Items</h3>
+  </div>
 
-  <div class="m-filter-columns">
-    <div class="filter-column">
-      <h3>Drinks</h3>
-      <ul>
-        <li data-filter="hot-drink">Hot Drinks</li>
-        <li data-filter="soft-drink">Soft Drinks</li>
-      </ul>
-    </div>
+  <div class="m-filter-column">
+    <h3>Drinks</h3>
+    <ul>
+      <li class="subcategory-title" data-filter="hot-drink">Hot Drinks</li>
+      <li class="subcategory-title" data-filter="soft-drink">Soft Drinks</li>
+    </ul>
+  </div>
 
-    <div class="filter-column">
-      <h3>Desserts</h3>
-      <ul>
-        <li data-filter="cakes">Cakes</li>
-        <li data-filter="brownies">Brownies</li>
-        <li data-filter="cupcakes">Cupcakes</li>
-      </ul>
-    </div>
+  <div class="m-filter-column">
+    <h3>Desserts</h3>
+    <ul>
+      <li class="subcategory-title" data-filter="cakes">Cakes</li>
+      <li class="subcategory-title" data-filter="brownies">Brownies</li>
+      <li class="subcategory-title" data-filter="cupcakes">Cupcakes</li>
+    </ul>
   </div>
 
 </div>
